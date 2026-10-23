@@ -266,7 +266,7 @@ export default function AuditReportPage() {
               Pelaporan &amp; Audit Trail (Ticket 08)
             </span>
           </div>
-          <h1 className="text-2xl font-bold font-serif text-slate-900 tracking-tight">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
             Laporan Pertanggungjawaban (LPJ) &amp; Jejak Audit
           </h1>
           <p className="text-xs text-slate-500 mt-1">
