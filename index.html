@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Platform Akuntabilitas &amp; Pengendalian Kegiatan Dinas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/gov.css" />
+</head>
+
+<body>
+  <!-- Ambient Orbs Canvas Foundation -->
+  <div class="ambient-canvas" aria-hidden="true">
+    <div class="orb orb--top-left"></div>
+    <div class="orb orb--bottom-right"></div>
+    <div class="orb orb--top-right"></div>
+  </div>
+
+  <!-- 3-Column Workspace Shell -->
+  <div id="workspaceShell" class="workspace-shell">
+    <!-- Column 1: Left Glass Sidebar (260px) -->
+    <aside class="sidebar-nav" aria-label="Navigasi Utama">
+      <div>
+        <div class="brand-header">
+          <div class="brand-mark">TK</div>
+          <div>
+            <div class="brand-title">Tata Kelola Dinas</div>
+            <div class="brand-subtitle">Platform Akuntabilitas Kedinasan</div>
+          </div>
+        </div>
+
+        <ul id="sidebarNavList" class="nav-list">
+          <li class="nav-item active" data-module="planning">
+            <span class="nav-item-label">▤ Rencana &amp; Approval</span>
+            <span class="nav-badge" id="navBadgeActivities">3</span>
+          </li>
+          <li class="nav-item" data-module="payroll">
+            <span class="nav-item-label">❖ Pencairan &amp; Honor</span>
+            <span class="nav-badge" id="navBadgePayroll">1</span>
+          </li>
+          <li class="nav-item" data-module="dashboard">
+            <span class="nav-item-label">▣ Direktori &amp; Rekening</span>
+          </li>
+          <li class="nav-item" data-module="lo-advance">
+            <span class="nav-item-label">◓ Panjar &amp; Buku Kas LO</span>
+          </li>
+          <li class="nav-item" data-module="reconciliation">
+            <span class="nav-item-label">✓ Rekonsiliasi &amp; SPJ</span>
+          </li>
+          <li class="nav-item" data-module="audit">
+            <span class="nav-item-label">⌸ Laporan &amp; Audit Trail</span>
+            <span class="nav-badge" id="navBadgeAudit">1</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-card">
+          <div id="sidebarAvatar" class="user-avatar">RD</div>
+          <div class="user-meta">
+            <div id="sidebarUserName" class="user-name">Memuat...</div>
+            <div id="sidebarUserRole" class="user-role-tag">Memuat peran...</div>
+          </div>
+          <button id="btnOpenLoginModal" class="btn-logout" title="Ganti Akun / Login">⏻</button>
+        </div>
+
+        <p class="demo-note">
+          Demo interaktif · data sintetis, tidak terhubung ke server.
+          <button type="button" id="btnResetDemo" class="demo-reset">reset data demo</button>
+        </p>
+      </div>
+    </aside>
+
+    <!-- Column 2: Dynamic Center Content Area (852px - 856px) -->
+    <main class="content-workspace">
+      <header class="workspace-topbar">
+        <div>
+          <div class="breadcrumb" id="activeBreadcrumb">Tata Kelola Kedinasan / Pencairan &amp; Pencairan Dana (Ticket
+            04)</div>
+          <h1 class="page-title" id="pageHeading">Pencairan Dana &amp; Direct Payroll</h1>
+        </div>
+        <div class="role-switcher-bar" id="quickRoleBar" aria-label="Simulasi Peran Cepat">
+          <!-- Populated dynamically from /api/auth/demo-accounts -->
+        </div>
+      </header>
+
+      <!-- Search, Filter & Primary 8-State CTA Bar -->
+      <section class="toolbar-row" aria-label="Pencarian dan Aksi Utama">
+        <div class="search-bar">
+          <span class="search-icon">⌕</span>
+          <input id="searchInput" type="search" class="search-input"
+            placeholder="Cari kode batch, kegiatan, penerima transfer, rekening, atau nomor referensi..." />
+        </div>
+        <button id="btnToggle8State" type="button" class="btn-filter">≡ Uji 8-State UI</button>
+        <button id="btnPrimaryCta" type="button" class="btn-action" data-state="default">
+          + Buat Batch Payroll
+        </button>
+      </section>
+
+      <!-- 3-Grid Metric Cards (268px x 130px Glassmorphism) -->
+      <section class="metrics-grid" aria-label="Metrik Anggaran & Tata Kelola">
+        <article class="metric-card active" data-metric="pagu">
+          <div class="metric-label">Total Pagu Kegiatan</div>
+          <div class="metric-title mono-num" id="metricPagu">Rp 380.000.000</div>
+          <div class="metric-sub">
+            <span>Akumulasi Pagu Disahkan</span>
+            <span class="mono-num">Otomatis L1</span>
+          </div>
+        </article>
+
+        <article class="metric-card" data-metric="payroll">
+          <div class="metric-label">Realisasi Honor &amp; Gaji</div>
+          <div class="metric-title mono-num" id="metricPayroll">Rp 20.000.000</div>
+          <div class="metric-sub">
+            <span>Direct Bank Transfer</span>
+            <span class="mono-num">Verifikasi SHA-256</span>
+          </div>
+        </article>
+
+        <article class="metric-card" data-metric="lo">
+          <div class="metric-label">Alokasi Panjar LO</div>
+          <div class="metric-title mono-num" id="metricLoAdvance">Rp 85.000.000</div>
+          <div class="metric-sub">
+            <span>Kategori LO_OPERATIONAL</span>
+            <span class="mono-num">Wajib SPJ</span>
+          </div>
+        </article>
+      </section>
+
+      <!-- Ticket 04: Modul Pencairan & Pencairan Dana (Finance Disbursement) -->
+      <section id="payrollSection" class="glass-panel" aria-label="Modul Pencairandan Pencairan Dana">
+        <div class="panel-header-row">
+          <div>
+            <h2 class="card-header">Daftar Batch Pencairan Dana &amp; Payroll Staf</h2>
+            <p class="breadcrumb">Pencairan langsung ke rekening penerima (Direct Payroll). Validasi L1 mencegah
+              pencairan melebihi pagu pos RAB.</p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button id="btnOpenNewAccountModal" type="button" class="role-pill">+ Rekening Penerima</button>
+            <button id="btnOpenNewPayrollModal" type="button" class="role-pill active">+ Batch Payroll Baru</button>
+          </div>
+        </div>
+
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Kode Batch &amp; Judul</th>
+                <th>Kegiatan Terkait</th>
+                <th>Total Transfer (Bruto)</th>
+                <th>Penerima</th>
+                <th>Status Pencairan</th>
+                <th>Aksi Verifikasi</th>
+              </tr>
+            </thead>
+            <tbody id="disbursementsTableBody">
+              <!-- Populated via /api/disbursements -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Selected Disbursement Details & Bank Transfer Slips -->
+        <div id="selectedDisbursementDetail"
+          style="margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border-subtle);">
+          <!-- Populated dynamically -->
+        </div>
+      </section>
+
+
+      <!-- Ticket 05: LO Operational Cashbook & Digital Ledger Section -->
+      <section id="loAdvanceSection" class="glass-panel" style="display: none;"
+        aria-label="Buku Kas Digital LO & Panjar">
+        <div class="panel-header-row">
+          <div>
+            <h2 class="card-header">Buku Kas Digital LO (Uang Muka Operasional &amp; Belanja Lapangan)</h2>
+            <p class="breadcrumb">Pencatatan real-time penerimaan panjar, belanja lapangan berbasis bukti kuitansi, dan
+              sisa kas di tangan LO.</p>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <select id="loCashbookActivityFilter" class="form-input"
+              style="width: auto; padding: 6px 12px; font-size: 13px;">
+              <option value="">Semua Kegiatan (Gabungan)</option>
+            </select>
+            <button id="btnOpenFieldCaptureModal" type="button" class="role-pill active"
+              style="background: #059669; border-color: #059669;">
+              📷 Catat Kuitansi / Foto (Smart Camera)
+            </button>
+            <button id="btnOpenLoDisbursementModal" type="button" class="role-pill active">+ Cairkan Panjar LO</button>
+          </div>
+        </div>
+
+        <!-- Overdue Alert Banner if LO has unsettled past advance -->
+        <div id="loOverdueAlertBox"
+          style="display: none; background: rgba(220, 38, 38, 0.08); border: 1px solid rgba(220, 38, 38, 0.3); border-radius: var(--radius-card); padding: 12px 16px; margin: 16px 0;">
+          <div style="display: flex; align-items: center; gap: 8px; color: #dc2626; font-weight: 600;">
+            <span>⚠️</span>
+            <span>Peringatan Tertunggak: LO memiliki panjar operasional yang belum diselesaikan pada kegiatan
+              lampau!</span>
+          </div>
+          <p id="loOverdueAlertText" style="font-size: 12px; color: var(--text-body); margin: 4px 0 0 24px;"></p>
+        </div>
+
+        <!-- 3 KPI Cards inside LO Cashbook -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0;">
+          <div class="glass-card" style="padding: 16px;">
+            <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.04em;">
+              Total Panjar Diterima</div>
+            <div id="cbTotalAdvance" class="mono-num"
+              style="font-size: 20px; font-weight: 700; color: var(--primary); margin: 6px 0;">Rp 0</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Transfer Rekening Resmi LO</div>
+          </div>
+          <div class="glass-card" style="padding: 16px;">
+            <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.04em;">
+              Realisasi Belanja Lapangan</div>
+            <div id="cbTotalExpenses" class="mono-num"
+              style="font-size: 20px; font-weight: 700; color: #f59e0b; margin: 6px 0;">Rp 0</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Kuitansi &amp; Bukti Tercatat</div>
+          </div>
+          <div class="glass-card" style="padding: 16px;">
+            <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.04em;">
+              Sisa Kas di Tangan (Cash on Hand)</div>
+            <div id="cbRemainingCash" class="mono-num"
+              style="font-size: 20px; font-weight: 700; color: #10b981; margin: 6px 0;">Rp 0</div>
+            <div id="cbCashBadge" class="status-badge status-badge--success"
+              style="display: inline-block; margin-top: 2px;">Saldo Aman</div>
+          </div>
+        </div>
+
+        <!-- Interactive Cashbook Ledger Table -->
+        <div class="data-table-wrap" style="margin-top: 16px;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Arah &amp; Kode</th>
+                <th>Uraian &amp; Vendor</th>
+                <th>Kegiatan</th>
+                <th style="text-align: right;">Masuk (Kredit)</th>
+                <th style="text-align: right;">Keluar (Debet)</th>
+                <th style="text-align: right;">Saldo Kas</th>
+                <th>Status / Bukti</th>
+              </tr>
+            </thead>
+            <tbody id="loCashbookTableBody">
+              <!-- Populated via GET /api/lo/cashbook -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Ticket 07: Rekonsiliasi Pengeluaran & Tutup Panjar LO (SPJ Kasir) -->
+      <section id="reconciliationSection" class="glass-panel" style="display: none;"
+        aria-label="Rekonsiliasi Pengeluaran dan SPJ Kasir">
+        <div class="panel-header-row">
+          <div>
+            <h2 class="card-header">Rekonsiliasi Pengeluaran &amp; Tutup Panjar LO (SPJ Kasir)</h2>
+            <p class="breadcrumb">Telaah bukti kuitansi lapangan, audit otomatis L1/L2/L3 (Pagu, Tanggal, Duplikasi
+              SHA-256), dan settlement sisa uang panjar.</p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button id="btnOpenSettlementModal" type="button" class="btn-action"
+              style="font-size: 12px; background: var(--primary);">
+              ⚡ Tutup Panjar LO (Settlement)
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 KPI Metrics -->
+        <div class="metrics-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 20px;">
+          <div class="metric-card">
+            <span class="metric-card-label">Total Kuitansi Masuk</span>
+            <div class="metric-card-value mono-num" id="recTotalCount">0</div>
+            <span class="metric-card-hint">Klaim belanja LO</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-card-label">Menunggu Telaah</span>
+            <div class="metric-card-value mono-num" id="recPendingCount" style="color: var(--status-pending-text);">0
+            </div>
+            <span class="metric-card-hint">Status SUBMITTED</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-card-label">Realisasi Disetujui</span>
+            <div class="metric-card-value mono-num" id="recVerifiedAmount" style="color: var(--status-success-text);">Rp
+              0</div>
+            <span class="metric-card-hint">Total kuitansi VERIFIED</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-card-label">Status Tutup Panjar</span>
+            <div class="metric-card-value" id="recSettlementBadge" style="font-size: 15px; margin-top: 4px;">
+              <span class="status-badge status-badge--scheduled">Panjar Aktif</span>
+            </div>
+            <span class="metric-card-hint" id="recSettlementHint">Kuitansi belum lengkap</span>
+          </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="toolbar-row" style="margin-bottom: 16px;">
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Filter Status:</label>
+            <select id="recStatusFilter" class="form-input" style="height: 36px; padding: 0 10px; font-size: 12px;">
+              <option value="">Semua Status</option>
+              <option value="SUBMITTED">Menunggu Verifikasi (SUBMITTED)</option>
+              <option value="VERIFIED">Disetujui (VERIFIED)</option>
+              <option value="REJECTED">Ditolak (REJECTED)</option>
+            </select>
+
+            <label
+              style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-left: 10px;">Kegiatan:</label>
+            <select id="recActivityFilter" class="form-input" style="height: 36px; padding: 0 10px; font-size: 12px;">
+              <option value="">Semua Kegiatan</option>
+              <option value="act-2026-000">ACT-2026-000 - Rapat Koordinasi Wilayah</option>
+            </select>
+          </div>
+          <button id="btnRefreshReconciliation" type="button" class="btn btn--subtle" style="font-size: 12px;">
+            ↻ Muat Ulang
+          </button>
+        </div>
+
+        <!-- Reconciliation Table -->
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Kode &amp; Vendor</th>
+                <th>Tanggal &amp; Kegiatan</th>
+                <th style="text-align: right;">Nominal Belanja</th>
+                <th>Validasi Otomatis (L1/L2/L3)</th>
+                <th>Status Kuitansi</th>
+                <th>Aksi Verifikasi</th>
+              </tr>
+            </thead>
+            <tbody id="reconciliationTableBody">
+              <!-- Populated via /api/expenses -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+
+      <!-- Tickets 02 & 03: Daftar Kegiatan, Rincian RAB, Approval SV, & Amendemen -->
+      <section id="planningSection" class="glass-panel" aria-label="Daftar Rencana Kegiatan dan RAB">
+        <div class="panel-header-row">
+          <div>
+            <h2 class="card-header">Daftar Usulan Kegiatan, Persetujuan SV, &amp; Amendemen</h2>
+            <p class="breadcrumb">Pemisahan Tugas (SoD): PJ mengajukan rencana, SV menelaah &amp; mengesahkan. Dokumen
+              APPROVED hanya bisa diubah via Amendemen berversi.</p>
+          </div>
+          <span id="activeRoleBadge" class="status-badge status-badge--scheduled">Peran Aktif: PJ</span>
+        </div>
+
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Kode &amp; Judul Kegiatan</th>
+                <th>Jadwal Pelaksanaan</th>
+                <th>LO Lapangan</th>
+                <th>Total Pagu RAB</th>
+                <th>Status &amp; Versi</th>
+                <th>Aksi Kewenangan</th>
+              </tr>
+            </thead>
+            <tbody id="activitiesTableBody">
+              <!-- Populated via /api/activities -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Selected Activity RAB Breakdown & Approval Workflow -->
+        <div id="selectedActivityDetail"
+          style="margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border-subtle);">
+          <!-- Populated dynamically -->
+        </div>
+      </section>
+
+
+      <!-- Active Role Governance & Directory Table -->
+      <section id="directorySection" class="glass-panel" aria-label="Direktori Peran dan Rekening Kedinasan">
+        <div class="panel-header-row">
+          <div>
+            <h2 class="card-header">Direktori Pejabat, Pelaksana LO, &amp; Rekening Penerima Terdaftar</h2>
+            <p class="breadcrumb">Rekening penerima honorarium, gaji, dan panjar lapangan yang telah diverifikasi.</p>
+          </div>
+          <button id="btnOpenNewAccountModal2" type="button" class="role-pill active">+ Daftarkan Rekening Baru</button>
+        </div>
+
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nama Penerima (Beneficiary)</th>
+                <th>Bank &amp; Nomor Rekening</th>
+                <th>NPWP</th>
+                <th>Tautan Pengguna</th>
+                <th>Status Rekening</th>
+              </tr>
+            </thead>
+            <tbody id="bankAccountsTableBody">
+              <!-- Populated via /api/bank-accounts -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Ticket 08: Unified Reporting, Drill-Down Audit Trail, & PDF/Excel Export -->
+      <section id="auditSection" class="glass-panel" style="display: none;"
+        aria-label="Laporan Pertanggungjawaban dan Audit Trail Lengkap">
+        <div class="panel-header-row">
+          <div>
+            <h2 class="card-header">Laporan Pertanggungjawaban (LPJ) &amp; Jejak Audit Lengkap</h2>
+            <p class="breadcrumb">Konsolidasi terpadu: Pagu vs Realisasi, Payroll langsung, Panjar LO, Uji Integritas
+              SHA-256, dan Drill-Down bukti bayar.</p>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button id="btnExportCsv" type="button" class="btn btn--subtle" style="font-size: 12px;">
+              📥 Unduh Format CSV/Excel
+            </button>
+            <button id="btnExportHtml" type="button" class="btn-action"
+              style="font-size: 12px; background: var(--primary);">
+              🖨️ Cetak / Unduh PDF LPJ Resmi
+            </button>
+          </div>
+        </div>
+
+        <!-- Activity Selector & Compliance Badge -->
+        <div class="toolbar-row" style="margin-bottom: 16px;">
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Pilih Kegiatan:</label>
+            <select id="auditActivitySelect" class="form-input" style="height: 36px; padding: 0 10px; font-size: 12px;">
+              <option value="act-2026-000">ACT-2026-000 - Rapat Koordinasi Wilayah</option>
+            </select>
+          </div>
+          <div id="auditComplianceBadge" class="status-badge status-badge--success">
+            100% Integritas Kriptografis Lolos
+          </div>
+        </div>
+
+        <!-- 5 KPI Cards -->
+        <div class="metrics-grid" style="grid-template-columns: repeat(5, 1fr); margin-bottom: 20px;">
+          <div class="metric-card">
+            <span class="metric-card-label">Total Pagu Usulan</span>
+            <div class="metric-card-value mono-num" id="rptPaguTotal">Rp 0</div>
+            <span class="metric-card-hint">Pagu Induk RAB</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-card-label">Direct Payroll</span>
+            <div class="metric-card-value mono-num" id="rptPayrollTotal" style="color: var(--primary);">Rp 0</div>
+            <span class="metric-card-hint">Honorarium staf</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-card-label">Belanja Lapangan</span>
+            <div class="metric-card-value mono-num" id="rptExpensesTotal" style="color: var(--status-success-text);">Rp
+              0</div>
+            <span class="metric-card-hint">Realisasi kuitansi LO</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-card-label">Total Realisasi</span>
+            <div class="metric-card-value mono-num" id="rptTotalRealized">Rp 0</div>
+            <span class="metric-card-hint" id="rptRealizationPct">0% serapan</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-card-label">Sisa Kas Daerah</span>
+            <div class="metric-card-value mono-num" id="rptRemainingBudget" style="color: #059669;">Rp 0</div>
+            <span class="metric-card-hint">Efisiensi anggaran</span>
+          </div>
+        </div>
+
+        <!-- Sub-Navigation Tabs -->
+        <div style="display: flex; gap: 8px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 16px;">
+          <button id="tabBtnRab" type="button" class="btn btn--subtle active"
+            style="font-size: 12px; border-bottom: 2px solid var(--primary); border-radius: 6px 6px 0 0;">
+            📊 Realisasi RAB vs Aktual
+          </button>
+          <button id="tabBtnPayroll" type="button" class="btn btn--subtle"
+            style="font-size: 12px; border-radius: 6px 6px 0 0;">
+            💳 Direct Payroll Staf
+          </button>
+          <button id="tabBtnExpenses" type="button" class="btn btn--subtle"
+            style="font-size: 12px; border-radius: 6px 6px 0 0;">
+            🧾 Kuitansi LO &amp; Dokumentasi Foto
+          </button>
+          <button id="tabBtnAudit" type="button" class="btn btn--subtle"
+            style="font-size: 12px; border-radius: 6px 6px 0 0;">
+            🔒 Jejak Audit &amp; Kriptografi
+          </button>
+        </div>
+
+        <!-- Tab 1: Realisasi RAB -->
+        <div id="tabContentRab" class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Kategori &amp; Komponen</th>
+                <th style="text-align: right;">Pagu Anggaran</th>
+                <th style="text-align: right;">Realisasi Payroll</th>
+                <th style="text-align: right;">Realisasi Belanja</th>
+                <th style="text-align: right;">Total Realisasi</th>
+                <th style="text-align: right;">Sisa Pagu</th>
+                <th style="text-align: center;">Serapan</th>
+              </tr>
+            </thead>
+            <tbody id="rptRabTableBody">
+              <!-- Populated via /api/activities/{id}/accountability-report -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Tab 2: Direct Payroll -->
+        <div id="tabContentPayroll" class="data-table-wrap" style="display: none;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Penerima &amp; Rekening</th>
+                <th>NPWP</th>
+                <th style="text-align: right;">Nominal Bersih</th>
+                <th>No. Referensi Transfer</th>
+                <th>Status</th>
+                <th>SHA-256 Bukti Transfer</th>
+                <th>Drill-Down</th>
+              </tr>
+            </thead>
+            <tbody id="rptPayrollTableBody">
+              <!-- Populated via /api/activities/{id}/accountability-report -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Tab 3: Field Expenses & Visual Evidences -->
+        <div id="tabContentExpenses" class="data-table-wrap" style="display: none;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Kode &amp; Vendor</th>
+                <th>Tanggal</th>
+                <th>Uraian Belanja</th>
+                <th style="text-align: right;">Nominal</th>
+                <th>Status &amp; Verifikator</th>
+                <th>SHA-256 Kuitansi</th>
+                <th>Drill-Down</th>
+              </tr>
+            </thead>
+            <tbody id="rptExpensesTableBody">
+              <!-- Populated via /api/activities/{id}/accountability-report -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Tab 4: Audit Trail -->
+        <div id="tabContentAudit" class="data-table-wrap" style="display: none;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Waktu (UTC)</th>
+                <th>Aksi Kedinasan</th>
+                <th>Aktor &amp; Peran</th>
+                <th>Tipe Entitas</th>
+                <th>Rincian Parameter &amp; Hash</th>
+              </tr>
+            </thead>
+            <tbody id="rptAuditTableBody">
+              <!-- Populated via /api/activities/{id}/accountability-report -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+
+      <!-- Hallmark 8-State Interactive Inspector (Collapsible) -->
+      <section id="eightStateInspector" class="glass-panel" style="display: none;"
+        aria-label="Standar 8-State Hallmark">
+        <div class="panel-header-row">
+          <div>
+            <h2 class="card-header">Verifikasi Komponen 8-State (Hallmark Discipline)</h2>
+            <p class="breadcrumb">Seluruh tombol finansial wajib memiliki 8 state eksplisit tanpa improvisasi token
+              warna.</p>
+          </div>
+          <a href="./index.html" class="status-badge status-badge--scheduled" style="text-decoration:none;">
+            Demo interaktif · data sintetis
+          </a>
+        </div>
+        <div class="role-switcher-bar" style="gap: 12px;">
+          <button type="button" class="btn-action">1. Default</button>
+          <button type="button" class="btn-action is-hover">2. Hover</button>
+          <button type="button" class="btn-action is-focus">3. Focus</button>
+          <button type="button" class="btn-action is-active">4. Active</button>
+          <button type="button" class="btn-action" disabled>5. Disabled</button>
+          <button type="button" class="btn-action" data-state="loading">⟳ 6. Memproses...</button>
+          <button type="button" class="btn-action" data-state="error">⚠ 7. Saldo Kurang</button>
+          <button type="button" class="btn-action" data-state="success">✓ 8. Tercatat</button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Column 3: Right InfoPanel (280px, radius 28px 0 0 28px) -->
+    <aside id="infoPanel" class="info-panel" aria-label="Panel Informasi & Audit">
+      <button id="hs_info_toggle" class="hs-info-toggle" title="Sembunyikan/Tampilkan InfoPanel">›</button>
+
+      <div>
+        <h2 class="card-header">Hak Akses Peran Aktif</h2>
+        <p class="breadcrumb" style="margin-top: 4px;">Matriks kewenangan sesi saat ini:</p>
+        <div id="permissionChips" class="chip-list" style="margin-top: 12px;">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Ticket 03 & 04: Version Comparison & Financial Integrity Badge in Right InfoPanel -->
+      <div style="border-top: 1px solid var(--border-subtle); padding-top: 16px;">
+        <h2 class="card-header">Status &amp; Perbandingan Versi</h2>
+        <div id="infoPanelVersionBox" style="margin-top: 10px;">
+          <!-- Populated dynamically from selected activity -->
+        </div>
+      </div>
+
+      <div style="border-top: 1px solid var(--border-subtle); padding-top: 16px;">
+        <h2 class="card-header">Integritas Bukti Transfer</h2>
+        <div class="chip-list" style="margin-top: 10px;">
+          <span class="chip-tag">
+            <span class="chip-dot chip-dot--on"></span>
+            SHA-256 Receipt Hash
+          </span>
+          <span class="chip-tag">
+            <span class="chip-dot chip-dot--on"></span>
+            Maker-Checker Separation
+          </span>
+          <span class="chip-tag">
+            <span class="chip-dot chip-dot--on"></span>
+            Bank-Ready CSV Export
+          </span>
+        </div>
+      </div>
+
+      <!-- Ticket 05: LO Operational Cashbook Summary Widget in InfoPanel -->
+      <div id="infoPanelLoCashbox" style="border-top: 1px solid var(--border-subtle); padding-top: 16px;">
+        <div class="panel-header-row" style="margin-bottom: 8px;">
+          <h2 class="card-header">Kas Digital LO (Panjar)</h2>
+          <span id="infoPanelLoBadge" class="status-badge status-badge--success">Aktif</span>
+        </div>
+        <div
+          style="background: rgba(30, 91, 184, 0.05); border: 1px solid var(--border-subtle); border-radius: var(--radius-card); padding: 12px; margin-top: 8px;">
+          <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em;">
+            Sisa Kas di Tangan</div>
+          <div id="infoPanelRemainingCash" class="mono-num"
+            style="font-size: 18px; font-weight: 700; color: #10b981; margin: 4px 0;">Rp 0</div>
+          <div
+            style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--border-subtle); padding-top: 6px; margin-top: 6px;">
+            <span>Panjar Masuk:</span>
+            <strong id="infoPanelTotalAdvance" class="mono-num" style="color: var(--text-heading);">Rp 0</strong>
+          </div>
+          <div
+            style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+            <span>Struk Realisasi:</span>
+            <strong id="infoPanelTotalExpenses" class="mono-num" style="color: var(--text-heading);">Rp 0</strong>
+          </div>
+        </div>
+        <button id="btnOpenCashbookTab" class="btn btn--subtle" style="width: 100%; margin-top: 8px; font-size: 11px;">
+          Buka Buku Kas LO →
+        </button>
+      </div>
+
+      <div style="border-top: 1px solid var(--border-subtle); padding-top: 16px; flex: 1;">
+        <div class="panel-header-row" style="margin-bottom: 10px;">
+          <h2 class="card-header">Jejak Audit (Live)</h2>
+          <span class="status-badge status-badge--success">Immutable</span>
+        </div>
+        <div id="auditTrailFeed" class="audit-feed">
+          <!-- Populated via /api/audit-logs -->
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Modal: Create Activity & RAB Builder -->
+  <div id="activityModal" class="login-modal-backdrop" style="display: none;">
+    <div class="login-card" style="max-width: 800px; max-height: 92vh; overflow-y: auto;">
+      <div class="panel-header-row">
+        <div>
+          <h2 class="card-header" id="activityModalTitle">Buat Usulan Kegiatan &amp; Rincian RAB</h2>
+          <p class="breadcrumb" id="activityModalSubtitle">Total anggaran dihitung otomatis dari perkalian Kuantitas ×
+            Harga Satuan (Validasi L1).</p>
+        </div>
+        <button id="btnCloseActivityModal" class="btn-logout" type="button">✕</button>
+      </div>
+
+      <form id="activityForm">
+        <input type="hidden" id="editActivityId" value="" />
+        <input type="hidden" id="editActivityMode" value="create" />
+
+        <div id="amendReasonGroup" class="form-field"
+          style="display: none; background: var(--status-warning-bg); padding: 12px; border-radius: 12px;">
+          <label for="actAmendReason" style="color: var(--status-warning-text);">
+            Alasan Resmi Amendemen (Wajib Dicatat di Audit Trail &amp; Menaikkan Versi Dokumen)
+          </label>
+          <input id="actAmendReason" class="form-input" type="text"
+            placeholder="Contoh: Penyesuaian kuota peserta dan tambahan hari supervisi sesuai disposisi pimpinan..." />
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 2fr 1.2fr; gap: 12px;">
+          <div class="form-field">
+            <label for="actCode">Kode Kegiatan</label>
+            <input id="actCode" class="form-input mono-num" type="text" placeholder="ACT-2026-003" />
+          </div>
+          <div class="form-field">
+            <label for="actTitle">Judul Kegiatan Kedinasan</label>
+            <input id="actTitle" class="form-input" type="text" placeholder="Contoh: Rapat Koordinasi Evaluasi Anggaran"
+              required />
+          </div>
+          <div class="form-field">
+            <label for="actLoSelect">Petugas LO Lapangan</label>
+            <select id="actLoSelect" class="form-input">
+              <option value="usr-lo-01">M. Farhan Pratama (LO)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="actDescription">Deskripsi &amp; Target Output</label>
+          <input id="actDescription" class="form-input" type="text"
+            placeholder="Ringkasan tujuan dan sasaran kegiatan..." required />
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-field">
+            <label for="actStartDate">Tanggal Mulai</label>
+            <input id="actStartDate" class="form-input" type="date" value="2026-11-20" required />
+          </div>
+          <div class="form-field">
+            <label for="actEndDate">Tanggal Selesai</label>
+            <input id="actEndDate" class="form-input" type="date" value="2026-11-23" required />
+          </div>
+        </div>
+
+        <div class="panel-header-row" style="margin-top: 10px; margin-bottom: 8px;">
+          <label style="font-size: 12px; font-weight: 700; color: var(--text-primary);">
+            RINCIAN ANGGARAN BIAYA (RAB)
+          </label>
+          <button id="btnAddRabRow" type="button" class="role-pill active">+ Tambah Baris RAB</button>
+        </div>
+
+        <div id="rabRowsContainer" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;"></div>
+
+        <div class="panel-header-row" style="padding: 12px 14px; background: var(--bg-page); border-radius: 12px;">
+          <span style="font-weight: 600;">Total Pagu Terhitung Otomatis:</span>
+          <span id="modalCalculatedTotal" class="metric-title mono-num">Rp 0</span>
+        </div>
+
+        <p id="activityFormError"
+          style="color: var(--status-danger-text); font-size: 12px; margin-top: 10px; display: none;"></p>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+          <button id="btnSaveDraftActivity" type="submit" class="btn-action">
+            Simpan sebagai Draft
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Create New Payroll Batch (Ticket 04) -->
+  <div id="newPayrollModal" class="login-modal-backdrop" style="display: none;">
+    <div class="login-card" style="max-width: 840px; max-height: 92vh; overflow-y: auto;">
+      <div class="panel-header-row">
+        <div>
+          <h2 class="card-header">Buat Batch Pencairan &amp; Transfer Honorarium</h2>
+          <p class="breadcrumb">Pilih kegiatan berstatus APPROVED dan pos RAB yang sesuai (Validasi L1 Anggaran aktif).
+          </p>
+        </div>
+        <button id="btnClosePayrollModal" class="btn-logout" type="button">✕</button>
+      </div>
+
+      <form id="payrollBatchForm">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-field">
+            <label for="disbActivitySelect">Kegiatan (Khusus Status APPROVED)</label>
+            <select id="disbActivitySelect" class="form-input" required></select>
+          </div>
+          <div class="form-field">
+            <label for="disbTitle">Judul Batch Transfer</label>
+            <input id="disbTitle" class="form-input" type="text"
+              placeholder="Contoh: Honor Narasumber &amp; Moderator Sesi 1" required />
+          </div>
+        </div>
+
+        <div class="panel-header-row" style="margin-top: 12px; margin-bottom: 8px;">
+          <label style="font-size: 12px; font-weight: 700; color: var(--text-primary);">
+            DAFTAR PENERIMA TRANSFER (BENEFICIARIES)
+          </label>
+          <button id="btnAddBeneficiaryRow" type="button" class="role-pill active">+ Tambah Penerima</button>
+        </div>
+
+        <div id="payrollItemsContainer" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;">
+        </div>
+
+        <div class="panel-header-row" style="padding: 12px 14px; background: var(--bg-page); border-radius: 12px;">
+          <span style="font-weight: 600;">Total Transfer Bersih (Net):</span>
+          <span id="modalPayrollCalculatedTotal" class="metric-title mono-num">Rp 0</span>
+        </div>
+
+        <p id="payrollFormError"
+          style="color: var(--status-danger-text); font-size: 12px; margin-top: 10px; display: none;"></p>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+          <button id="btnSavePayrollBatch" type="submit" class="btn-action">
+            Simpan Batch Transfer (Draft)
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Register New Bank Account (Ticket 04) -->
+  <div id="newBankAccountModal" class="login-modal-backdrop" style="display: none;">
+    <div class="login-card" style="max-width: 520px;">
+      <div class="panel-header-row">
+        <div>
+          <h2 class="card-header">Daftarkan Rekening Penerima Baru</h2>
+          <p class="breadcrumb">Rekening tujuan untuk transfer honorarium staf, narasumber, atau panjar LO.</p>
+        </div>
+        <button id="btnCloseBankModal" class="btn-logout" type="button">✕</button>
+      </div>
+
+      <form id="bankAccountForm">
+        <div class="form-field">
+          <label for="baName">Nama Pemilik Rekening (Sesuai Buku Tabungan/KTP)</label>
+          <input id="baName" class="form-input" type="text" placeholder="Contoh: Dr. Ir. Ahmad Sudirman" required />
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 12px;">
+          <div class="form-field">
+            <label for="baBank">Nama Bank</label>
+            <input id="baBank" class="form-input" type="text" placeholder="Bank Mandiri / BRI / BCA" required />
+          </div>
+          <div class="form-field">
+            <label for="baNumber">Nomor Rekening</label>
+            <input id="baNumber" class="form-input mono-num" type="text" placeholder="1370001234567" required />
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="baNpwp">NPWP (Opsional untuk bukti potong PPh)</label>
+          <input id="baNpwp" class="form-input mono-num" type="text" placeholder="01.234.567.8-012.000" />
+        </div>
+
+        <p id="bankFormError"
+          style="color: var(--status-danger-text); font-size: 12px; margin-top: 10px; display: none;"></p>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+          <button id="btnSaveBankAccount" type="submit" class="btn-action">
+            Simpan Rekening
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Execute Transfer & Upload Slip (Ticket 04) -->
+  <div id="executeDisbursementModal" class="login-modal-backdrop" style="display: none;">
+    <div class="login-card" style="max-width: 560px;">
+      <div class="panel-header-row">
+        <div>
+          <h2 class="card-header">Eksekusi Transfer &amp; Catat Bukti Bank</h2>
+          <p class="breadcrumb">Sistem akan menghitung hash SHA-256 berkas bukti transfer untuk menjaga integritas
+            audit.</p>
+        </div>
+        <button id="btnCloseExecuteModal" class="btn-logout" type="button">✕</button>
+      </div>
+
+      <form id="executeDisbursementForm">
+        <input type="hidden" id="execDisbursementId" value="" />
+        <div class="form-field">
+          <label for="execRefNo">Nomor Referensi Transfer Bank / CMS</label>
+          <input id="execRefNo" class="form-input mono-num" type="text" placeholder="TRX-MND-20261023-009" required />
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-field">
+            <label for="execDate">Tanggal Eksekusi Transfer</label>
+            <input id="execDate" class="form-input" type="date" required />
+          </div>
+          <div class="form-field">
+            <label for="execFileName">Nama Berkas Bukti Transfer</label>
+            <input id="execFileName" class="form-input" type="text" placeholder="slip-transfer-bank.pdf" required />
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="execReceiptContent">Isi Catatan / Metadata Bukti Transfer (Sumber Hash SHA-256)</label>
+          <textarea id="execReceiptContent" class="form-input" rows="3"
+            placeholder="Paste data transfer atau teks konfirmasi internet banking untuk dihitung hash SHA-256..."
+            required></textarea>
+        </div>
+
+        <p id="execFormError"
+          style="color: var(--status-danger-text); font-size: 12px; margin-top: 10px; display: none;"></p>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+          <button id="btnSubmitExecute" type="submit" class="btn-action">
+            ✓ Konfirmasi Transfer &amp; Kunci Hash
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Smart Camera & Field Expense Capture (Ticket 06) -->
+  <div id="fieldCaptureModal" class="login-modal-backdrop" style="display: none;">
+    <div class="login-card" style="width: 580px; max-width: 95%;">
+      <div class="panel-header-row">
+        <div>
+          <h2 class="card-header">Simulator Lapangan LO (Smart Camera)</h2>
+          <p class="breadcrumb">Input kuitansi belanja lapangan atau foto kegiatan dengan integritas hash SHA-256 &amp;
+            Geotag.</p>
+        </div>
+        <button id="btnCloseFieldCaptureModal" class="btn-logout" type="button">✕</button>
+      </div>
+
+      <form id="fieldCaptureForm" style="margin-top: 14px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-field">
+            <label for="fcType">Jenis Bukti Lapangan</label>
+            <select id="fcType" class="form-input" required>
+              <option value="EXPENSE">Kuitansi Belanja (Struk/Nota)</option>
+              <option value="EVIDENCE">Foto Dokumentasi Kegiatan</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="fcActivityId">Kegiatan Terkait</label>
+            <select id="fcActivityId" class="form-input" required>
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+        </div>
+
+        <div id="fcExpenseFields">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-field">
+              <label for="fcVendor">Nama Vendor / Toko</label>
+              <input id="fcVendor" class="form-input" placeholder="contoh: Toko ATK Sinar Jaya / SPBU" />
+            </div>
+            <div class="form-field">
+              <label for="fcReceiptNum">Nomor Kuitansi / Struk</label>
+              <input id="fcReceiptNum" class="form-input" placeholder="contoh: STRUK-99201" />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-field">
+              <label for="fcAmount">Nominal Belanja (Rp)</label>
+              <input id="fcAmount" class="form-input" type="number" min="1" step="1000" placeholder="contoh: 250000" />
+            </div>
+            <div class="form-field">
+              <label for="fcDate">Tanggal Transaksi</label>
+              <input id="fcDate" class="form-input" type="date" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="fcTitle">Uraian Kebutuhan / Judul Dokumentasi</label>
+          <input id="fcTitle" class="form-input" placeholder="contoh: Pembelian ATK & map peserta bimtek" required />
+        </div>
+
+        <div
+          style="background: rgba(15, 23, 42, 0.03); border: 1px solid var(--border-subtle); border-radius: var(--radius-card); padding: 12px; margin: 12px 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-size: 11px; font-weight: 700; color: var(--text-heading); text-transform: uppercase;">
+              Metadata Geotag &amp; Integritas Kamera
+            </span>
+            <span class="status-badge status-badge--success" style="font-size: 10px;">GPS Lock</span>
+          </div>
+          <div
+            style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11px; color: var(--text-muted);">
+            <div>Koordinat: <strong class="mono-num" id="fcCoordsPreview">-6.2088, 106.8456</strong></div>
+            <div>Waktu Tangkap: <strong class="mono-num" id="fcTimePreview">2026-10-23T15:30:00</strong></div>
+          </div>
+          <div style="margin-top: 6px; font-size: 10px; color: var(--primary); font-family: monospace;"
+            id="fcHashPreview">
+            SHA-256: auto-calculated upon capture
+          </div>
+        </div>
+
+        <p id="fieldCaptureErrorMsg"
+          style="color: var(--status-danger-text); font-size: 12px; margin-bottom: 10px; display: none;"></p>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
+          <button id="btnQueueOfflineDraft" type="button" class="btn btn--subtle" style="font-size: 12px;">
+            📥 Simpan Draf Offline
+          </button>
+          <button id="btnSubmitFieldCapture" type="submit" class="btn-action">
+            📷 Jepret &amp; Kirim Bukti Langsung
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Ticket 07: Split-Screen Receipt Review Drawer / Modal -->
+  <div id="receiptReviewModal" class="login-modal-backdrop" style="display: none;">
+    <div class="split-review-card">
+      <div class="panel-header-row">
+        <div>
+          <h2 class="card-header" id="revHeaderTitle">Telaah Bukti Kuitansi &amp; Uji Validasi Otomatis (Ticket 07)</h2>
+          <p class="breadcrumb" id="revHeaderSubtitle">Pemisahan tugas: SV/Finance memverifikasi keabsahan kuitansi
+            terhadap pagu, tanggal, dan bukti fisik.</p>
+        </div>
+        <button id="btnCloseReviewModal" class="btn-logout" type="button">✕</button>
+      </div>
+
+      <div class="review-split-grid">
+        <!-- Left: Digital Receipt Paper View & Integrity Badges -->
+        <div>
+          <div class="receipt-paper-view">
+            <div
+              style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px dashed var(--border-subtle); padding-bottom: 12px; margin-bottom: 12px;">
+              <div>
+                <span
+                  style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em;">BUKTI
+                  PEMBAYARAN / KUITANSI</span>
+                <h3 id="revVendorName"
+                  style="font-size: 16px; font-weight: 700; color: var(--text-heading); margin-top: 2px;">-</h3>
+                <span id="revExpenseCode" class="mono-num"
+                  style="font-size: 11px; color: var(--primary); font-weight: 600;">EXP-2026-0000</span>
+              </div>
+              <div style="text-align: right;">
+                <span id="revReceiptStatusBadge" class="status-badge status-badge--pending">SUBMITTED</span>
+                <div id="revTxDate" class="mono-num"
+                  style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">2026-10-16</div>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+              <span style="font-size: 11px; color: var(--text-secondary); font-weight: 600;">Uraian Belanja:</span>
+              <p id="revDescription"
+                style="font-size: 13px; color: var(--text-primary); margin-top: 4px; line-height: 1.4;">-</p>
+            </div>
+
+            <div style="background: rgba(15, 23, 42, 0.02); border-radius: 8px; padding: 10px; margin-bottom: 16px;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                <span style="color: var(--text-muted);">No. Kuitansi / Faktur:</span>
+                <strong id="revReceiptNumber" class="mono-num">-</strong>
+              </div>
+              <div
+                style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; color: var(--text-heading); border-top: 1px dashed var(--border-subtle); padding-top: 6px; margin-top: 6px;">
+                <span>Total Nominal:</span>
+                <span id="revAmount" class="mono-num" style="color: var(--primary);">Rp 0</span>
+              </div>
+            </div>
+
+            <!-- SHA-256 Checksum & Geotag Proof -->
+            <div
+              style="border-top: 1px solid var(--border-subtle); padding-top: 12px; font-size: 11px; color: var(--text-muted);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <span>🔒 Integritas Kriptografis SHA-256:</span>
+                <span class="status-badge status-badge--success" style="font-size: 9px;">Valid Checksum</span>
+              </div>
+              <div id="revReceiptHash" class="mono-num"
+                style="word-break: break-all; font-size: 10px; color: var(--primary); background: rgba(59, 130, 246, 0.06); padding: 4px 8px; border-radius: 6px; font-family: monospace;">
+                -</div>
+
+              <div style="margin-top: 8px; display: flex; justify-content: space-between;">
+                <span>📍 Geotag Lokasi:</span>
+                <strong id="revGeotag" class="mono-num">-</strong>
+              </div>
+              <div style="margin-top: 4px; display: flex; justify-content: space-between;">
+                <span>👤 LO Penginput:</span>
+                <strong id="revLoUser">-</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Automated L1/L2/L3 Validation Engine Results & Verification Actions -->
+        <div>
+          <h4
+            style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 10px;">
+            Hasil Uji Validasi Otomatis (L1, L2, L3)
+          </h4>
+
+          <div id="revValidationContainer" style="margin-bottom: 18px;">
+            <!-- Populated via validation flags -->
+          </div>
+
+          <!-- Decision Workflow Area -->
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 16px;">
+            <h4 style="font-size: 13px; font-weight: 700; color: var(--text-heading); margin-bottom: 10px;">
+              Keputusan Verifikasi
+            </h4>
+
+            <div id="revActionForm">
+              <div class="form-field">
+                <label for="revRejectionNotes">Catatan / Alasan Penolakan (wajib diisi jika ditolak):</label>
+                <textarea id="revRejectionNotes" class="form-input"
+                  style="height: 64px; padding: 8px 12px; resize: vertical;"
+                  placeholder="Tuliskan alasan penolakan kuitansi..."></textarea>
+              </div>
+
+              <div style="display: flex; gap: 10px; margin-top: 12px;">
+                <button id="btnRejectExpense" type="button" class="btn btn--danger"
+                  style="flex: 1; font-size: 12px; padding: 10px 14px;" data-state="idle">
+                  ✕ Tolak Kuitansi
+                </button>
+                <button id="btnVerifyExpense" type="button" class="btn-action"
+                  style="flex: 1; font-size: 12px; padding: 10px 14px; background: var(--status-success-text);"
+                  data-state="idle">
+                  ✓ Verifikasi Kuitansi
+                </button>
+              </div>
+            </div>
+
+            <div id="revStampInfo"
+              style="display: none; background: rgba(16, 185, 129, 0.06); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 12px; margin-top: 10px;">
+              <div
+                style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--status-success-text);">
+                <span>✓ Diverifikasi oleh:</span>
+                <span id="revVerifierName">-</span>
+              </div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;" id="revVerifiedTimestamp">-</div>
+              <div id="revRejectionDisplay"
+                style="display: none; margin-top: 8px; font-size: 12px; color: var(--status-danger-text);"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ticket 07: Tutup Panjar LO (Settlement Modal) -->
+  <div id="settlementModal" class="login-modal-backdrop" style="display: none;">
+    <div class="login-card" style="max-width: 540px;">
+      <div class="panel-header-row">
+        <div>
+          <h2 class="card-header">Tutup Panjar Lapangan (SPJ Kasir)</h2>
+          <p class="breadcrumb">Penyelesaian uang muka panjar operasional LO dan penyetoran sisa kas kedinasan.</p>
+        </div>
+        <button id="btnCloseSettlementModal" class="btn-logout" type="button">✕</button>
+      </div>
+
+      <div
+        style="background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 14px; padding: 14px; margin-bottom: 16px;">
+        <div
+          style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--primary); margin-bottom: 8px;">
+          Ringkasan Uang Muka Panjar (dsbi-lo-01)
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px;">
+          <div>Plafon Panjar Diterima:</div>
+          <div style="text-align: right;"><strong id="stlAdvanceAmount" class="mono-num">Rp 0</strong></div>
+          <div>Realisasi Belanja Disetujui:</div>
+          <div style="text-align: right;"><strong id="stlVerifiedAmount" class="mono-num"
+              style="color: var(--status-success-text);">Rp 0</strong></div>
+          <div style="border-top: 1px dashed var(--border-subtle); padding-top: 6px;">Sisa Kas Wajib Setor:</div>
+          <div style="border-top: 1px dashed var(--border-subtle); padding-top: 6px; text-align: right;">
+            <strong id="stlRemainingAmount" class="mono-num" style="color: var(--primary); font-size: 14px;">Rp
+              0</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Warning if unreviewed expenses remain -->
+      <div id="stlUnreviewedWarning"
+        style="display: none; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 10px; padding: 10px 12px; font-size: 12px; color: #B91C1C; margin-bottom: 14px;">
+        ⚠️ <strong>Tutup panjar terkunci:</strong> Terdapat <span id="stlUnreviewedCount">0</span> kuitansi belum
+        diverifikasi/ditolak. Semua kuitansi wajib disahkan sebelum panjar dapat ditutup.
+      </div>
+
+      <form id="settlementForm">
+        <div class="form-field">
+          <label for="stlReturnedAmount">Nominal Pengembalian Sisa Kas (Rp)</label>
+          <input id="stlReturnedAmount" class="form-input mono-num" type="number" min="0" step="1000" placeholder="0"
+            required />
+          <span style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Jumlah dana tunai yang disetorkan
+            kembali ke rekening kas dinas.</span>
+        </div>
+
+        <div class="form-field">
+          <label for="stlNotes">Nomor Bukti Setor Kas / Catatan Penyelesaian SPJ</label>
+          <input id="stlNotes" class="form-input" placeholder="contoh: STS-BCA-2026-10-18 Sisa Panjar disetor penuh" />
+        </div>
+
+        <p id="settlementErrorMsg"
+          style="color: var(--status-danger-text); font-size: 12px; margin-bottom: 10px; display: none;"></p>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
+          <button id="btnCancelSettlement" type="button" class="btn btn--subtle" style="font-size: 12px;">
+            Batal
+          </button>
+          <button id="btnSubmitSettlement" type="submit" class="btn-action" data-state="idle">
+            Konfirmasi Tutup Panjar (SETTLED)
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Ticket 08: Drill-Down Modal -->
+  <div id="drillDownModal" class="login-modal-backdrop" style="display: none;">
+    <div class="login-card" style="max-width: 620px;">
+      <div class="panel-header-row">
+        <div>
+          <h2 class="card-header" id="ddTitle">Penelusuran Bukti Transaksi (Drill-Down)</h2>
+          <p class="breadcrumb">Integritas dokumen sumber, tanda tangan kriptografis, dan riwayat audit.</p>
+        </div>
+        <button id="btnCloseDrillDownModal" class="btn-logout" type="button">✕</button>
+      </div>
+
+      <div
+        style="background: rgba(59, 130, 246, 0.04); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 16px; padding: 16px; margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+          <div>
+            <span class="status-badge status-badge--success" id="ddEntityType">EXPENSE</span>
+            <h3 id="ddEntityHeading"
+              style="font-size: 15px; font-weight: 700; color: var(--text-heading); margin-top: 4px;">-</h3>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Nominal Terkait</div>
+            <div id="ddAmount" class="mono-num" style="font-size: 18px; font-weight: 800; color: var(--primary);">Rp 0
+            </div>
+          </div>
+        </div>
+
+        <div
+          style="border-top: 1px dashed var(--border-subtle); padding-top: 10px; margin-top: 8px; font-size: 12px; color: var(--text-secondary);"
+          id="ddMetadataList">
+          <!-- Populated dynamically -->
+        </div>
+
+        <div
+          style="margin-top: 10px; background: #FFFFFF; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 8px;">
+          <div
+            style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">
+            <span>Kriptografi SHA-256 Checksum:</span>
+            <span style="color: var(--status-success-text);">✓ Terverifikasi Asli</span>
+          </div>
+          <div id="ddHash" class="mono-num"
+            style="font-size: 10px; word-break: break-all; color: var(--primary); font-family: monospace;">-</div>
+        </div>
+      </div>
+
+      <!-- Audit Timeline of this record -->
+      <h4
+        style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;">
+        Riwayat Persetujuan &amp; Jejak Audit Entitas
+      </h4>
+      <div id="ddTimelineFeed" class="audit-feed" style="max-height: 180px; overflow-y: auto; margin-bottom: 16px;">
+        <!-- Timeline items -->
+      </div>
+
+      <div style="display: flex; justify-content: flex-end;">
+        <button id="btnCloseDrillDownFooter" type="button" class="btn btn--subtle" style="font-size: 12px;">
+          Tutup Penelusuran
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="login-modal-backdrop" style="display: none;">
+    <div class="login-card">
+      <div class="panel-header-row">
+        <h2 class="card-header">Autentikasi Pengguna Kedinasan</h2>
+        <button id="btnCloseLoginModal" class="btn-logout" type="button">✕</button>
+      </div>
+      <form id="loginForm">
+        <div class="form-field">
+          <label for="loginEmail">Email Kedinasan</label>
+          <input id="loginEmail" class="form-input" type="email" value="finance@dinas.go.id" required />
+        </div>
+        <div class="form-field">
+          <label for="loginPassword">Kata Sandi</label>
+          <input id="loginPassword" class="form-input" type="password" value="password123" required />
+        </div>
+        <p id="loginErrorMsg"
+          style="color: var(--status-danger-text); font-size: 12px; margin-bottom: 10px; display: none;"></p>
+        <button id="btnSubmitLogin" type="submit" class="btn-action" style="width: 100%;">
+          Masuk ke Workspace
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="./js/demo-seed.js"></script>
+  <script src="./js/demo-api.js"></script>
+  <script>
+    document.getElementById('btnResetDemo')?.addEventListener('click', () => {
+      if (window.DemoApi) window.DemoApi.reset();
+    });
+  </script>
+  <script src="./js/app.js"></script>
+</body>
+
+</html>

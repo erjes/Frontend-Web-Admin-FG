@@ -1,0 +1,74 @@
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 */
+/* Hallmark · macrostructure: Workbench (3-Column Workspace) · genre: modern-minimal · theme: custom-gov */
+/* Hallmark · component: financial-action-button · states: default · hover · focus · active · disabled · loading · error · success */
+
+:root {
+  /* Latar Belakang & Kanvas (Gov UI + Color Template) */
+  --bg-page: #f2f7ff;
+  --bg-surface: #ffffff;
+  --bg-surface-solid: #ffffff;
+
+  /* Permukaan Glassmorphism (Aligned with SPESIFIKASI_DESAIN_FRONTEND.md §1.1) */
+  --bg-glass-nav: rgba(255, 255, 255, 0.65);
+  --bg-glass-card: rgba(255, 255, 255, 0.70);
+  --bg-glass-card-nested: rgba(255, 255, 255, 0.85);
+  --bg-glass-panel: rgba(255, 255, 255, 0.60);
+
+  /* Brand / Action Primer */
+  --brand-navy-deep: #0f1f47;
+  --brand-navy-active: rgba(15, 31, 71, 0.94);
+  --brand-navy-button: rgba(15, 31, 71, 0.98);
+  --brand-blue-accent: #4080f2;
+  --color-primary: #2563eb;
+  --primary: var(--color-primary);
+  --color-primary-hover: #1d4ed8;
+  --primary-hover: var(--color-primary-hover);
+  --color-accent: #38bdf8;
+  --accent: var(--color-accent);
+
+  /* Tipografi */
+  --text-primary: #0f172a;
+  --text-heading: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-caption: rgba(102, 112, 133, 0.78);
+  --text-inverse: #ffffff;
+
+  /* Garis Batas (Borders) */
+  --border-subtle: #e2e8f0;
+  --border-glass-light: 1px solid rgba(255, 255, 255, 0.85);
+  --border-glass-subtle: 1px solid rgba(255, 255, 255, 0.60);
+  --border-dark-highlight: 1px solid rgba(255, 255, 255, 0.14);
+
+  /* Status Badges & Notifikasi */
+  --status-danger-badge: #e64d40;
+  --status-danger: #ef4444;
+  --status-danger-text: #dc2626;
+  --status-danger-bg: rgba(239, 68, 68, 0.14);
+  --status-warning-text: #d97706;
+  --status-warning-bg: rgba(217, 119, 6, 0.14);
+  --status-success: #10b981;
+  --status-success-text: #059669;
+  --status-success-bg: rgba(16, 185, 129, 0.14);
+  --status-scheduled-text: #2563eb;
+  --status-scheduled-bg: rgba(37, 99, 235, 0.14);
+
+  /* Elevasi (Shadows) */
+  --shadow-glass-card: 0px 4px 20px rgba(15, 31, 71, 0.06);
+  --shadow-elevated: 0px 8px 24px rgba(15, 31, 71, 0.12);
+  --shadow-dark-element: 0px 8px 22px rgba(15, 31, 71, 0.28);
+
+  /* Blur Standard */
+  --blur-glass-nav: blur(16px);
+  --blur-glass-card: blur(12px);
+  --blur-glass-small: blur(5px);
+
+  /* Font Stacks (Hallmark 2+1 Discipline) */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Menlo', monospace;
+
+  /* Ambient Orbs */
+  --orb-top-left: rgba(140, 179, 255, 0.35);
+  --orb-bottom-right: rgba(255, 255, 255, 0.6);
+  --orb-top-right: rgba(15, 31, 71, 0.12);
+}
