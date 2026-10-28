@@ -725,7 +725,7 @@
 
   <!-- Modal: Create Activity & RAB Builder -->
   <div id="activityModal" class="login-modal-backdrop" style="display: none;">
-    <div class="login-card" style="max-width: 800px; max-height: 92vh; overflow-y: auto;">
+    <div class="login-card modal-window-lg">
       <div class="panel-header-row">
         <div>
           <h2 class="card-header" id="activityModalTitle">Buat Usulan Kegiatan &amp; Rincian RAB</h2>
@@ -813,7 +813,7 @@
 
   <!-- Modal: Create New Payroll Batch (Ticket 04) -->
   <div id="newPayrollModal" class="login-modal-backdrop" style="display: none;">
-    <div class="login-card" style="max-width: 840px; max-height: 92vh; overflow-y: auto;">
+    <div class="login-card modal-window-lg">
       <div class="panel-header-row">
         <div>
           <h2 class="card-header">Buat Batch Pencairan &amp; Transfer Honorarium</h2>
@@ -867,7 +867,7 @@
 
   <!-- Modal: Register New Bank Account (Ticket 04) -->
   <div id="newBankAccountModal" class="login-modal-backdrop" style="display: none;">
-    <div class="login-card" style="max-width: 520px;">
+    <div class="login-card modal-window-sm">
       <div class="panel-header-row">
         <div>
           <h2 class="card-header">Daftarkan Rekening Penerima Baru</h2>
@@ -912,7 +912,7 @@
 
   <!-- Modal: Execute Transfer & Upload Slip (Ticket 04) -->
   <div id="executeDisbursementModal" class="login-modal-backdrop" style="display: none;">
-    <div class="login-card" style="max-width: 560px;">
+    <div class="login-card modal-window-md">
       <div class="panel-header-row">
         <div>
           <h2 class="card-header">Eksekusi Transfer &amp; Catat Bukti Bank</h2>
@@ -962,7 +962,7 @@
 
   <!-- Modal: Smart Camera & Field Expense Capture (Ticket 06) -->
   <div id="fieldCaptureModal" class="login-modal-backdrop" style="display: none;">
-    <div class="login-card" style="width: 580px; max-width: 95%;">
+    <div class="login-card modal-window-md">
       <div class="panel-header-row">
         <div>
           <h2 class="card-header">Simulator Lapangan LO (Smart Camera)</h2>
@@ -1029,9 +1029,9 @@
             <span class="status-badge status-badge--success" style="font-size: 10px;">GPS Lock</span>
           </div>
           <div
-            style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11px; color: var(--text-muted);">
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; font-size: 11px; color: var(--text-muted);">
             <div>Koordinat: <strong class="mono-num" id="fcCoordsPreview">-6.2088, 106.8456</strong></div>
-            <div>Waktu Tangkap: <strong class="mono-num" id="fcTimePreview">2026-10-23T15:30:00</strong></div>
+            <div style="word-break: break-all;">Waktu Tangkap: <strong class="mono-num" id="fcTimePreview">2026-10-23T15:30:00</strong></div>
           </div>
           <div style="margin-top: 6px; font-size: 10px; color: var(--primary); font-family: monospace;"
             id="fcHashPreview">
@@ -1058,7 +1058,7 @@
 
   <!-- Ticket 07: Split-Screen Receipt Review Drawer / Modal -->
   <div id="receiptReviewModal" class="login-modal-backdrop" style="display: none;">
-    <div class="split-review-card">
+    <div class="split-review-card modal-window-xl">
       <div class="panel-header-row">
         <div>
           <h2 class="card-header" id="revHeaderTitle">Telaah Bukti Kuitansi &amp; Uji Validasi Otomatis (Ticket 07)</h2>
@@ -1202,7 +1202,7 @@
 
   <!-- Ticket 07: Tutup Panjar LO (Settlement Modal) -->
   <div id="settlementModal" class="login-modal-backdrop" style="display: none;">
-    <div class="login-card" style="max-width: 540px;">
+    <div class="login-card modal-window-md">
       <div class="panel-header-row">
         <div>
           <h2 class="card-header">Tutup Panjar Lapangan (SPJ Kasir)</h2>
@@ -1281,7 +1281,7 @@
 
   <!-- Ticket 08: Drill-Down Modal -->
   <div id="drillDownModal" class="login-modal-backdrop" style="display: none;">
-    <div class="login-card" style="max-width: 620px;">
+    <div class="login-card modal-window-md">
       <div class="panel-header-row">
         <div>
           <h2 class="card-header" id="ddTitle">Penelusuran Bukti Transaksi (Drill-Down)</h2>
