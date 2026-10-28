@@ -19,10 +19,131 @@
     <div class="orb orb--top-right"></div>
   </div>
 
-  <!-- 3-Column Workspace Shell -->
-  <div id="workspaceShell" class="workspace-shell">
-    <!-- Column 1: Left Glass Sidebar (260px) -->
-    <aside class="sidebar-nav" aria-label="Navigasi Utama">
+  <!-- Dedicated Full-Screen Login View (Alur Dimulai Dari Login Page) -->
+  <div id="loginScreen" class="login-screen-view">
+    <div class="login-screen-container">
+      <!-- Kolom Kiri: Identitas Platform -->
+      <div class="login-brand-panel">
+        <div>
+          <div class="login-brand-icon">
+            <svg class="svg-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+          </div>
+          <h1 class="login-brand-title">
+            Platform Akuntabilitas &amp; Tata Kelola Kegiatan Dinas
+          </h1>
+          <p class="login-brand-desc">
+            Segregation of Duties ditegakkan di setiap lapisan: rencana oleh PJ, telaah oleh SV,
+            pencairan oleh Bendahara, bukti lapangan oleh LO, dan audit trail immutable oleh Auditor.
+          </p>
+        </div>
+        <div class="login-brand-badges">
+          <div class="login-badge-item">
+            <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/>
+              <path d="M14 13.12c0 2.38 0 6.38-1 8.88"/>
+              <path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/>
+              <path d="M2 12a10 10 0 0 1 18-6"/>
+              <path d="M2 16h.01"/>
+              <path d="M21.8 16c.2-2 .131-5.354 0-6"/>
+              <path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2"/>
+              <path d="M8.65 22c.21-.66.45-1.32.57-2"/>
+              <path d="M9 6.8a6 6 0 0 1 9 5.2v2"/>
+            </svg>
+            <span>Integritas Bukti SHA-256 · Standar Kedinasan</span>
+          </div>
+          <div class="login-badge-item">
+            <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <span>Sesi JWT HS256 · Jejak Audit Append-Only</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kolom Kanan: 6 Akun Demo 1-Klik & Form Masuk -->
+      <div class="login-card-panel">
+        <div class="panel-header-row" style="margin-bottom: 8px;">
+          <div>
+            <h2 class="card-header" style="font-size: 18px; margin: 0;">Masuk ke Portal</h2>
+            <p class="breadcrumb" style="margin-top: 2px;">Menu dan hak akses otomatis menyesuaikan peran akun Anda.</p>
+          </div>
+        </div>
+
+        <!-- 6 Akun Demo 1-Klik -->
+        <div style="margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">
+              Pilih Peran Demo (1-Klik Masuk)
+            </span>
+            <span class="mono-num" style="font-size: 10px; color: var(--text-muted);">password: password123</span>
+          </div>
+          <div id="loginScreenAccountsGrid" class="demo-role-grid">
+            <button type="button" class="demo-role-btn" data-email="pj@dinas.go.id" data-role="PJ">
+              <span class="demo-role-tag demo-role-tag--pj">PJ · Penanggung Jawab</span>
+              <span class="demo-role-name">Budi Santoso, M.Si</span>
+              <span class="demo-role-email">pj@dinas.go.id</span>
+            </button>
+            <button type="button" class="demo-role-btn" data-email="sv@dinas.go.id" data-role="SV">
+              <span class="demo-role-tag demo-role-tag--sv">SV · Verifikator</span>
+              <span class="demo-role-name">Siti Rahma, S.E., Ak.</span>
+              <span class="demo-role-email">sv@dinas.go.id</span>
+            </button>
+            <button type="button" class="demo-role-btn" data-email="finance@dinas.go.id" data-role="FINANCE">
+              <span class="demo-role-tag demo-role-tag--finance">FINANCE · Bendahara</span>
+              <span class="demo-role-name">Hendra Wijaya, S.Ak.</span>
+              <span class="demo-role-email">finance@dinas.go.id</span>
+            </button>
+            <button type="button" class="demo-role-btn" data-email="lo@dinas.go.id" data-role="LO">
+              <span class="demo-role-tag demo-role-tag--lo">LO · Liaison Officer</span>
+              <span class="demo-role-name">M. Farhan Pratama</span>
+              <span class="demo-role-email">lo@dinas.go.id</span>
+            </button>
+            <button type="button" class="demo-role-btn" data-email="auditor@dinas.go.id" data-role="AUDITOR">
+              <span class="demo-role-tag demo-role-tag--auditor">AUDITOR · Inspektorat</span>
+              <span class="demo-role-name">Dr. Bambang Prakoso</span>
+              <span class="demo-role-email">auditor@dinas.go.id</span>
+            </button>
+            <button type="button" class="demo-role-btn" data-email="radja@dinas.go.id" data-role="ADMIN">
+              <span class="demo-role-tag demo-role-tag--admin">ADMIN · Administrator</span>
+              <span class="demo-role-name">Radja (Lead Dev)</span>
+              <span class="demo-role-email">radja@dinas.go.id</span>
+            </button>
+          </div>
+        </div>
+
+        <div style="position: relative; text-align: center; margin: 14px 0 16px;">
+          <hr style="border: none; border-top: 1px solid var(--border-subtle); margin: 0;" />
+          <span style="position: relative; top: -9px; background: #ffffff; padding: 0 10px; font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">
+            atau masuk manual
+          </span>
+        </div>
+
+        <form id="loginScreenForm">
+          <div class="form-field" style="margin-bottom: 10px;">
+            <label for="lsEmail">Email Kedinasan</label>
+            <input id="lsEmail" class="form-input" type="email" value="pj@dinas.go.id" required />
+          </div>
+          <div class="form-field" style="margin-bottom: 12px;">
+            <label for="lsPassword">Kata Sandi</label>
+            <input id="lsPassword" class="form-input" type="password" value="password123" required />
+          </div>
+          <p id="lsErrorMsg" style="color: var(--status-danger-text); font-size: 12px; margin-bottom: 10px; display: none;"></p>
+          <button id="btnSubmitLoginScreen" type="submit" class="btn-action" style="width: 100%;">
+            Masuk ke Workspace
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2-Column Workspace Shell (Sidebar + Content) -->
+  <div id="workspaceShell" class="workspace-shell" style="display: none;">
+    <!-- Sidebar: komponen mandiri, membuka/menutup dan mendorong konten (bukan overlay) -->
+    <aside id="sidebarNav" class="sidebar-nav" aria-label="Navigasi Utama">
       <div>
         <div class="brand-header">
           <div class="brand-mark">TK</div>
@@ -34,24 +155,42 @@
 
         <ul id="sidebarNavList" class="nav-list">
           <li class="nav-item active" data-module="planning">
-            <span class="nav-item-label">▤ Rencana &amp; Approval</span>
+            <span class="nav-item-label">
+              <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="m9 15 2 2 4-4"/></svg>
+              Rencana &amp; Approval
+            </span>
             <span class="nav-badge" id="navBadgeActivities">3</span>
           </li>
           <li class="nav-item" data-module="payroll">
-            <span class="nav-item-label">❖ Pencairan &amp; Honor</span>
+            <span class="nav-item-label">
+              <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+              Pencairan &amp; Honor
+            </span>
             <span class="nav-badge" id="navBadgePayroll">1</span>
           </li>
           <li class="nav-item" data-module="dashboard">
-            <span class="nav-item-label">▣ Direktori &amp; Rekening</span>
+            <span class="nav-item-label">
+              <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              Direktori &amp; Rekening
+            </span>
           </li>
           <li class="nav-item" data-module="lo-advance">
-            <span class="nav-item-label">◓ Panjar &amp; Buku Kas LO</span>
+            <span class="nav-item-label">
+              <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>
+              Panjar &amp; Buku Kas LO
+            </span>
           </li>
           <li class="nav-item" data-module="reconciliation">
-            <span class="nav-item-label">✓ Rekonsiliasi &amp; SPJ</span>
+            <span class="nav-item-label">
+              <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+              Rekonsiliasi &amp; SPJ
+            </span>
           </li>
           <li class="nav-item" data-module="audit">
-            <span class="nav-item-label">⌸ Laporan &amp; Audit Trail</span>
+            <span class="nav-item-label">
+              <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+              Laporan &amp; Audit Trail
+            </span>
             <span class="nav-badge" id="navBadgeAudit">1</span>
           </li>
         </ul>
@@ -64,7 +203,9 @@
             <div id="sidebarUserName" class="user-name">Memuat...</div>
             <div id="sidebarUserRole" class="user-role-tag">Memuat peran...</div>
           </div>
-          <button id="btnOpenLoginModal" class="btn-logout" title="Ganti Akun / Login">⏻</button>
+          <button id="btnOpenLoginModal" class="btn-logout" title="Ganti Akun / Keluar">
+            <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" x2="12" y1="2" y2="12"/></svg>
+          </button>
         </div>
 
         <p class="demo-note">
@@ -77,24 +218,27 @@
     <!-- Column 2: Dynamic Center Content Area (852px - 856px) -->
     <main class="content-workspace">
       <header class="workspace-topbar">
-        <div>
+        <div class="topbar-title-group">
+          <button id="btnSidebarToggle" type="button" class="btn-sidebar-toggle" aria-label="Buka menu navigasi" aria-controls="sidebarNav" aria-expanded="false">
+            <svg class="svg-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+          </button>
+          <div>
           <div class="breadcrumb" id="activeBreadcrumb">Tata Kelola Kedinasan / Pencairan &amp; Pencairan Dana (Ticket
             04)</div>
           <h1 class="page-title" id="pageHeading">Pencairan Dana &amp; Direct Payroll</h1>
-        </div>
-        <div class="role-switcher-bar" id="quickRoleBar" aria-label="Simulasi Peran Cepat">
-          <!-- Populated dynamically from /api/auth/demo-accounts -->
+          </div>
         </div>
       </header>
 
-      <!-- Search, Filter & Primary 8-State CTA Bar -->
+      <!-- Search & Primary Action Bar -->
       <section class="toolbar-row" aria-label="Pencarian dan Aksi Utama">
         <div class="search-bar">
-          <span class="search-icon">⌕</span>
+          <span class="search-icon">
+            <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></svg>
+          </span>
           <input id="searchInput" type="search" class="search-input"
             placeholder="Cari kode batch, kegiatan, penerima transfer, rekening, atau nomor referensi..." />
         </div>
-        <button id="btnToggle8State" type="button" class="btn-filter">≡ Uji 8-State UI</button>
         <button id="btnPrimaryCta" type="button" class="btn-action" data-state="default">
           + Buat Batch Payroll
         </button>
@@ -185,8 +329,9 @@
               <option value="">Semua Kegiatan (Gabungan)</option>
             </select>
             <button id="btnOpenFieldCaptureModal" type="button" class="role-pill active"
-              style="background: #059669; border-color: #059669;">
-              📷 Catat Kuitansi / Foto (Smart Camera)
+              style="background: #059669; border-color: #059669; display: inline-flex; align-items: center; gap: 6px;">
+              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+              Catat Kuitansi / Foto (Smart Camera)
             </button>
             <button id="btnOpenLoDisbursementModal" type="button" class="role-pill active">+ Cairkan Panjar LO</button>
           </div>
@@ -196,7 +341,7 @@
         <div id="loOverdueAlertBox"
           style="display: none; background: rgba(220, 38, 38, 0.08); border: 1px solid rgba(220, 38, 38, 0.3); border-radius: var(--radius-card); padding: 12px 16px; margin: 16px 0;">
           <div style="display: flex; align-items: center; gap: 8px; color: #dc2626; font-weight: 600;">
-            <span>⚠️</span>
+            <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>
             <span>Peringatan Tertunggak: LO memiliki panjar operasional yang belum diselesaikan pada kegiatan
               lampau!</span>
           </div>
@@ -204,7 +349,7 @@
         </div>
 
         <!-- 3 KPI Cards inside LO Cashbook -->
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 16px 0;">
           <div class="glass-card" style="padding: 16px;">
             <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.04em;">
               Total Panjar Diterima</div>
@@ -262,14 +407,15 @@
           </div>
           <div style="display: flex; gap: 8px;">
             <button id="btnOpenSettlementModal" type="button" class="btn-action"
-              style="font-size: 12px; background: var(--primary);">
-              ⚡ Tutup Panjar LO (Settlement)
+              style="font-size: 12px; background: var(--primary); display: inline-flex; align-items: center; gap: 6px;">
+              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Tutup Panjar LO (Settlement)
             </button>
           </div>
         </div>
 
         <!-- 4 KPI Metrics -->
-        <div class="metrics-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 20px;">
+        <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 20px;">
           <div class="metric-card">
             <span class="metric-card-label">Total Kuitansi Masuk</span>
             <div class="metric-card-value mono-num" id="recTotalCount">0</div>
@@ -314,8 +460,9 @@
               <option value="act-2026-000">ACT-2026-000 - Rapat Koordinasi Wilayah</option>
             </select>
           </div>
-          <button id="btnRefreshReconciliation" type="button" class="btn btn--subtle" style="font-size: 12px;">
-            ↻ Muat Ulang
+          <button id="btnRefreshReconciliation" type="button" class="btn btn--subtle" style="font-size: 12px; display: inline-flex; align-items: center; gap: 6px;">
+            <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+            Muat Ulang
           </button>
         </div>
 
@@ -415,12 +562,14 @@
               SHA-256, dan Drill-Down bukti bayar.</p>
           </div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button id="btnExportCsv" type="button" class="btn btn--subtle" style="font-size: 12px;">
-              📥 Unduh Format CSV/Excel
+            <button id="btnExportCsv" type="button" class="btn btn--subtle" style="font-size: 12px; display: inline-flex; align-items: center; gap: 6px;">
+              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+              Unduh Format CSV/Excel
             </button>
             <button id="btnExportHtml" type="button" class="btn-action"
-              style="font-size: 12px; background: var(--primary);">
-              🖨️ Cetak / Unduh PDF LPJ Resmi
+              style="font-size: 12px; background: var(--primary); display: inline-flex; align-items: center; gap: 6px;">
+              <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+              Cetak / Unduh PDF LPJ Resmi
             </button>
           </div>
         </div>
@@ -438,30 +587,29 @@
           </div>
         </div>
 
-        <!-- 5 KPI Cards -->
-        <div class="metrics-grid" style="grid-template-columns: repeat(5, 1fr); margin-bottom: 20px;">
-          <div class="metric-card">
+        <!-- 5 KPI Cards (Responsive & Tabular) -->
+        <div class="lpj-kpi-grid" style="margin-bottom: 20px;">
+          <div class="lpj-kpi-card">
             <span class="metric-card-label">Total Pagu Usulan</span>
             <div class="metric-card-value mono-num" id="rptPaguTotal">Rp 0</div>
             <span class="metric-card-hint">Pagu Induk RAB</span>
           </div>
-          <div class="metric-card">
+          <div class="lpj-kpi-card">
             <span class="metric-card-label">Direct Payroll</span>
             <div class="metric-card-value mono-num" id="rptPayrollTotal" style="color: var(--primary);">Rp 0</div>
             <span class="metric-card-hint">Honorarium staf</span>
           </div>
-          <div class="metric-card">
+          <div class="lpj-kpi-card">
             <span class="metric-card-label">Belanja Lapangan</span>
-            <div class="metric-card-value mono-num" id="rptExpensesTotal" style="color: var(--status-success-text);">Rp
-              0</div>
+            <div class="metric-card-value mono-num" id="rptExpensesTotal" style="color: var(--status-success-text);">Rp 0</div>
             <span class="metric-card-hint">Realisasi kuitansi LO</span>
           </div>
-          <div class="metric-card">
+          <div class="lpj-kpi-card">
             <span class="metric-card-label">Total Realisasi</span>
             <div class="metric-card-value mono-num" id="rptTotalRealized">Rp 0</div>
             <span class="metric-card-hint" id="rptRealizationPct">0% serapan</span>
           </div>
-          <div class="metric-card">
+          <div class="lpj-kpi-card">
             <span class="metric-card-label">Sisa Kas Daerah</span>
             <div class="metric-card-value mono-num" id="rptRemainingBudget" style="color: #059669;">Rp 0</div>
             <span class="metric-card-hint">Efisiensi anggaran</span>
@@ -469,22 +617,26 @@
         </div>
 
         <!-- Sub-Navigation Tabs -->
-        <div style="display: flex; gap: 8px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 16px;">
+        <div style="display: flex; gap: 8px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 16px; flex-wrap: wrap;">
           <button id="tabBtnRab" type="button" class="btn btn--subtle active"
-            style="font-size: 12px; border-bottom: 2px solid var(--primary); border-radius: 6px 6px 0 0;">
-            📊 Realisasi RAB vs Aktual
+            style="font-size: 12px; border-bottom: 2px solid var(--primary); border-radius: 6px 6px 0 0; display: inline-flex; align-items: center; gap: 6px;">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg>
+            Realisasi RAB vs Aktual
           </button>
           <button id="tabBtnPayroll" type="button" class="btn btn--subtle"
-            style="font-size: 12px; border-radius: 6px 6px 0 0;">
-            💳 Direct Payroll Staf
+            style="font-size: 12px; border-radius: 6px 6px 0 0; display: inline-flex; align-items: center; gap: 6px;">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+            Direct Payroll Staf
           </button>
           <button id="tabBtnExpenses" type="button" class="btn btn--subtle"
-            style="font-size: 12px; border-radius: 6px 6px 0 0;">
-            🧾 Kuitansi LO &amp; Dokumentasi Foto
+            style="font-size: 12px; border-radius: 6px 6px 0 0; display: inline-flex; align-items: center; gap: 6px;">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 6v12"/></svg>
+            Kuitansi LO &amp; Dokumentasi Foto
           </button>
           <button id="tabBtnAudit" type="button" class="btn btn--subtle"
-            style="font-size: 12px; border-radius: 6px 6px 0 0;">
-            🔒 Jejak Audit &amp; Kriptografi
+            style="font-size: 12px; border-radius: 6px 6px 0 0; display: inline-flex; align-items: center; gap: 6px;">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            Jejak Audit &amp; Kriptografi
           </button>
         </div>
 
@@ -568,109 +720,7 @@
       </section>
 
 
-      <!-- Hallmark 8-State Interactive Inspector (Collapsible) -->
-      <section id="eightStateInspector" class="glass-panel" style="display: none;"
-        aria-label="Standar 8-State Hallmark">
-        <div class="panel-header-row">
-          <div>
-            <h2 class="card-header">Verifikasi Komponen 8-State (Hallmark Discipline)</h2>
-            <p class="breadcrumb">Seluruh tombol finansial wajib memiliki 8 state eksplisit tanpa improvisasi token
-              warna.</p>
-          </div>
-          <a href="./index.html" class="status-badge status-badge--scheduled" style="text-decoration:none;">
-            Demo interaktif · data sintetis
-          </a>
-        </div>
-        <div class="role-switcher-bar" style="gap: 12px;">
-          <button type="button" class="btn-action">1. Default</button>
-          <button type="button" class="btn-action is-hover">2. Hover</button>
-          <button type="button" class="btn-action is-focus">3. Focus</button>
-          <button type="button" class="btn-action is-active">4. Active</button>
-          <button type="button" class="btn-action" disabled>5. Disabled</button>
-          <button type="button" class="btn-action" data-state="loading">⟳ 6. Memproses...</button>
-          <button type="button" class="btn-action" data-state="error">⚠ 7. Saldo Kurang</button>
-          <button type="button" class="btn-action" data-state="success">✓ 8. Tercatat</button>
-        </div>
-      </section>
-
     </main>
-
-    <!-- Column 3: Right InfoPanel (280px, radius 28px 0 0 28px) -->
-    <aside id="infoPanel" class="info-panel" aria-label="Panel Informasi & Audit">
-      <button id="hs_info_toggle" class="hs-info-toggle" title="Sembunyikan/Tampilkan InfoPanel">›</button>
-
-      <div>
-        <h2 class="card-header">Hak Akses Peran Aktif</h2>
-        <p class="breadcrumb" style="margin-top: 4px;">Matriks kewenangan sesi saat ini:</p>
-        <div id="permissionChips" class="chip-list" style="margin-top: 12px;">
-          <!-- Populated dynamically -->
-        </div>
-      </div>
-
-      <!-- Ticket 03 & 04: Version Comparison & Financial Integrity Badge in Right InfoPanel -->
-      <div style="border-top: 1px solid var(--border-subtle); padding-top: 16px;">
-        <h2 class="card-header">Status &amp; Perbandingan Versi</h2>
-        <div id="infoPanelVersionBox" style="margin-top: 10px;">
-          <!-- Populated dynamically from selected activity -->
-        </div>
-      </div>
-
-      <div style="border-top: 1px solid var(--border-subtle); padding-top: 16px;">
-        <h2 class="card-header">Integritas Bukti Transfer</h2>
-        <div class="chip-list" style="margin-top: 10px;">
-          <span class="chip-tag">
-            <span class="chip-dot chip-dot--on"></span>
-            SHA-256 Receipt Hash
-          </span>
-          <span class="chip-tag">
-            <span class="chip-dot chip-dot--on"></span>
-            Maker-Checker Separation
-          </span>
-          <span class="chip-tag">
-            <span class="chip-dot chip-dot--on"></span>
-            Bank-Ready CSV Export
-          </span>
-        </div>
-      </div>
-
-      <!-- Ticket 05: LO Operational Cashbook Summary Widget in InfoPanel -->
-      <div id="infoPanelLoCashbox" style="border-top: 1px solid var(--border-subtle); padding-top: 16px;">
-        <div class="panel-header-row" style="margin-bottom: 8px;">
-          <h2 class="card-header">Kas Digital LO (Panjar)</h2>
-          <span id="infoPanelLoBadge" class="status-badge status-badge--success">Aktif</span>
-        </div>
-        <div
-          style="background: rgba(30, 91, 184, 0.05); border: 1px solid var(--border-subtle); border-radius: var(--radius-card); padding: 12px; margin-top: 8px;">
-          <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em;">
-            Sisa Kas di Tangan</div>
-          <div id="infoPanelRemainingCash" class="mono-num"
-            style="font-size: 18px; font-weight: 700; color: #10b981; margin: 4px 0;">Rp 0</div>
-          <div
-            style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--border-subtle); padding-top: 6px; margin-top: 6px;">
-            <span>Panjar Masuk:</span>
-            <strong id="infoPanelTotalAdvance" class="mono-num" style="color: var(--text-heading);">Rp 0</strong>
-          </div>
-          <div
-            style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 4px;">
-            <span>Struk Realisasi:</span>
-            <strong id="infoPanelTotalExpenses" class="mono-num" style="color: var(--text-heading);">Rp 0</strong>
-          </div>
-        </div>
-        <button id="btnOpenCashbookTab" class="btn btn--subtle" style="width: 100%; margin-top: 8px; font-size: 11px;">
-          Buka Buku Kas LO →
-        </button>
-      </div>
-
-      <div style="border-top: 1px solid var(--border-subtle); padding-top: 16px; flex: 1;">
-        <div class="panel-header-row" style="margin-bottom: 10px;">
-          <h2 class="card-header">Jejak Audit (Live)</h2>
-          <span class="status-badge status-badge--success">Immutable</span>
-        </div>
-        <div id="auditTrailFeed" class="audit-feed">
-          <!-- Populated via /api/audit-logs -->
-        </div>
-      </div>
-    </aside>
   </div>
 
   <!-- Modal: Create Activity & RAB Builder -->
@@ -682,7 +732,9 @@
           <p class="breadcrumb" id="activityModalSubtitle">Total anggaran dihitung otomatis dari perkalian Kuantitas ×
             Harga Satuan (Validasi L1).</p>
         </div>
-        <button id="btnCloseActivityModal" class="btn-logout" type="button">✕</button>
+        <button id="btnCloseActivityModal" class="btn-logout" type="button" title="Tutup">
+          <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+        </button>
       </div>
 
       <form id="activityForm">
@@ -768,7 +820,9 @@
           <p class="breadcrumb">Pilih kegiatan berstatus APPROVED dan pos RAB yang sesuai (Validasi L1 Anggaran aktif).
           </p>
         </div>
-        <button id="btnClosePayrollModal" class="btn-logout" type="button">✕</button>
+        <button id="btnClosePayrollModal" class="btn-logout" type="button" title="Tutup">
+          <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+        </button>
       </div>
 
       <form id="payrollBatchForm">
@@ -819,7 +873,9 @@
           <h2 class="card-header">Daftarkan Rekening Penerima Baru</h2>
           <p class="breadcrumb">Rekening tujuan untuk transfer honorarium staf, narasumber, atau panjar LO.</p>
         </div>
-        <button id="btnCloseBankModal" class="btn-logout" type="button">✕</button>
+        <button id="btnCloseBankModal" class="btn-logout" type="button" title="Tutup">
+          <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+        </button>
       </div>
 
       <form id="bankAccountForm">
@@ -863,7 +919,9 @@
           <p class="breadcrumb">Sistem akan menghitung hash SHA-256 berkas bukti transfer untuk menjaga integritas
             audit.</p>
         </div>
-        <button id="btnCloseExecuteModal" class="btn-logout" type="button">✕</button>
+        <button id="btnCloseExecuteModal" class="btn-logout" type="button" title="Tutup">
+          <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+        </button>
       </div>
 
       <form id="executeDisbursementForm">
@@ -893,8 +951,9 @@
           style="color: var(--status-danger-text); font-size: 12px; margin-top: 10px; display: none;"></p>
 
         <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
-          <button id="btnSubmitExecute" type="submit" class="btn-action">
-            ✓ Konfirmasi Transfer &amp; Kunci Hash
+          <button id="btnSubmitExecute" type="submit" class="btn-action" style="display: inline-flex; align-items: center; gap: 6px;">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Konfirmasi Transfer &amp; Kunci Hash
           </button>
         </div>
       </form>
@@ -910,7 +969,9 @@
           <p class="breadcrumb">Input kuitansi belanja lapangan atau foto kegiatan dengan integritas hash SHA-256 &amp;
             Geotag.</p>
         </div>
-        <button id="btnCloseFieldCaptureModal" class="btn-logout" type="button">✕</button>
+        <button id="btnCloseFieldCaptureModal" class="btn-logout" type="button" title="Tutup">
+          <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+        </button>
       </div>
 
       <form id="fieldCaptureForm" style="margin-top: 14px;">
@@ -982,11 +1043,13 @@
           style="color: var(--status-danger-text); font-size: 12px; margin-bottom: 10px; display: none;"></p>
 
         <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
-          <button id="btnQueueOfflineDraft" type="button" class="btn btn--subtle" style="font-size: 12px;">
-            📥 Simpan Draf Offline
+          <button id="btnQueueOfflineDraft" type="button" class="btn btn--subtle" style="font-size: 12px; display: inline-flex; align-items: center; gap: 6px;">
+            <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+            Simpan Draf Offline
           </button>
-          <button id="btnSubmitFieldCapture" type="submit" class="btn-action">
-            📷 Jepret &amp; Kirim Bukti Langsung
+          <button id="btnSubmitFieldCapture" type="submit" class="btn-action" style="display: inline-flex; align-items: center; gap: 6px;">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+            Jepret &amp; Kirim Bukti Langsung
           </button>
         </div>
       </form>
@@ -1002,7 +1065,9 @@
           <p class="breadcrumb" id="revHeaderSubtitle">Pemisahan tugas: SV/Finance memverifikasi keabsahan kuitansi
             terhadap pagu, tanggal, dan bukti fisik.</p>
         </div>
-        <button id="btnCloseReviewModal" class="btn-logout" type="button">✕</button>
+        <button id="btnCloseReviewModal" class="btn-logout" type="button" title="Tutup">
+          <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+        </button>
       </div>
 
       <div class="review-split-grid">
@@ -1049,19 +1114,28 @@
             <div
               style="border-top: 1px solid var(--border-subtle); padding-top: 12px; font-size: 11px; color: var(--text-muted);">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                <span>🔒 Integritas Kriptografis SHA-256:</span>
+                <span style="display: inline-flex; align-items: center; gap: 4px;">
+                  <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  Integritas Kriptografis SHA-256:
+                </span>
                 <span class="status-badge status-badge--success" style="font-size: 9px;">Valid Checksum</span>
               </div>
               <div id="revReceiptHash" class="mono-num"
                 style="word-break: break-all; font-size: 10px; color: var(--primary); background: rgba(59, 130, 246, 0.06); padding: 4px 8px; border-radius: 6px; font-family: monospace;">
                 -</div>
 
-              <div style="margin-top: 8px; display: flex; justify-content: space-between;">
-                <span>📍 Geotag Lokasi:</span>
+              <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="display: inline-flex; align-items: center; gap: 4px;">
+                  <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                  Geotag Lokasi:
+                </span>
                 <strong id="revGeotag" class="mono-num">-</strong>
               </div>
-              <div style="margin-top: 4px; display: flex; justify-content: space-between;">
-                <span>👤 LO Penginput:</span>
+              <div style="margin-top: 4px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="display: inline-flex; align-items: center; gap: 4px;">
+                  <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  LO Penginput:
+                </span>
                 <strong id="revLoUser">-</strong>
               </div>
             </div>
@@ -1095,13 +1169,15 @@
 
               <div style="display: flex; gap: 10px; margin-top: 12px;">
                 <button id="btnRejectExpense" type="button" class="btn btn--danger"
-                  style="flex: 1; font-size: 12px; padding: 10px 14px;" data-state="idle">
-                  ✕ Tolak Kuitansi
+                  style="flex: 1; font-size: 12px; padding: 10px 14px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;" data-state="idle">
+                  <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+                  Tolak Kuitansi
                 </button>
                 <button id="btnVerifyExpense" type="button" class="btn-action"
-                  style="flex: 1; font-size: 12px; padding: 10px 14px; background: var(--status-success-text);"
+                  style="flex: 1; font-size: 12px; padding: 10px 14px; background: var(--status-success-text); display: inline-flex; align-items: center; justify-content: center; gap: 6px;"
                   data-state="idle">
-                  ✓ Verifikasi Kuitansi
+                  <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  Verifikasi Kuitansi
                 </button>
               </div>
             </div>
@@ -1110,7 +1186,8 @@
               style="display: none; background: rgba(16, 185, 129, 0.06); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 12px; margin-top: 10px;">
               <div
                 style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--status-success-text);">
-                <span>✓ Diverifikasi oleh:</span>
+                <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Diverifikasi oleh:</span>
                 <span id="revVerifierName">-</span>
               </div>
               <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;" id="revVerifiedTimestamp">-</div>
@@ -1131,7 +1208,12 @@
           <h2 class="card-header">Tutup Panjar Lapangan (SPJ Kasir)</h2>
           <p class="breadcrumb">Penyelesaian uang muka panjar operasional LO dan penyetoran sisa kas kedinasan.</p>
         </div>
-        <button id="btnCloseSettlementModal" class="btn-logout" type="button">✕</button>
+        <button id="btnCloseSettlementModal" class="btn-logout" type="button" aria-label="Tutup Modal">
+          <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
 
       <div
@@ -1156,9 +1238,16 @@
 
       <!-- Warning if unreviewed expenses remain -->
       <div id="stlUnreviewedWarning"
-        style="display: none; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 10px; padding: 10px 12px; font-size: 12px; color: #B91C1C; margin-bottom: 14px;">
-        ⚠️ <strong>Tutup panjar terkunci:</strong> Terdapat <span id="stlUnreviewedCount">0</span> kuitansi belum
-        diverifikasi/ditolak. Semua kuitansi wajib disahkan sebelum panjar dapat ditutup.
+        style="display: none; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 10px; padding: 10px 12px; font-size: 12px; color: #B91C1C; margin-bottom: 14px; display: none; align-items: flex-start; gap: 8px;">
+        <svg class="svg-icon" style="width: 16px; height: 16px; color: #B91C1C; flex-shrink: 0; margin-top: 1px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        <div>
+          <strong>Tutup panjar terkunci:</strong> Terdapat <span id="stlUnreviewedCount">0</span> kuitansi belum
+          diverifikasi/ditolak. Semua kuitansi wajib disahkan sebelum panjar dapat ditutup.
+        </div>
       </div>
 
       <form id="settlementForm">
@@ -1198,7 +1287,12 @@
           <h2 class="card-header" id="ddTitle">Penelusuran Bukti Transaksi (Drill-Down)</h2>
           <p class="breadcrumb">Integritas dokumen sumber, tanda tangan kriptografis, dan riwayat audit.</p>
         </div>
-        <button id="btnCloseDrillDownModal" class="btn-logout" type="button">✕</button>
+        <button id="btnCloseDrillDownModal" class="btn-logout" type="button" aria-label="Tutup Modal">
+          <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
 
       <div
@@ -1225,9 +1319,14 @@
         <div
           style="margin-top: 10px; background: #FFFFFF; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 8px;">
           <div
-            style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">
+            style="display: flex; justify-content: space-between; align-items: center; font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">
             <span>Kriptografi SHA-256 Checksum:</span>
-            <span style="color: var(--status-success-text);">✓ Terverifikasi Asli</span>
+            <span style="color: var(--status-success-text); display: inline-flex; align-items: center; gap: 4px;">
+              <svg class="svg-icon" style="width: 12px; height: 12px; stroke-width: 2.5;" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Terverifikasi Asli
+            </span>
           </div>
           <div id="ddHash" class="mono-num"
             style="font-size: 10px; word-break: break-all; color: var(--primary); font-family: monospace;">-</div>
@@ -1251,38 +1350,10 @@
     </div>
   </div>
 
-  <!-- Login Modal -->
-  <div id="loginModal" class="login-modal-backdrop" style="display: none;">
-    <div class="login-card">
-      <div class="panel-header-row">
-        <h2 class="card-header">Autentikasi Pengguna Kedinasan</h2>
-        <button id="btnCloseLoginModal" class="btn-logout" type="button">✕</button>
-      </div>
-      <form id="loginForm">
-        <div class="form-field">
-          <label for="loginEmail">Email Kedinasan</label>
-          <input id="loginEmail" class="form-input" type="email" value="finance@dinas.go.id" required />
-        </div>
-        <div class="form-field">
-          <label for="loginPassword">Kata Sandi</label>
-          <input id="loginPassword" class="form-input" type="password" value="password123" required />
-        </div>
-        <p id="loginErrorMsg"
-          style="color: var(--status-danger-text); font-size: 12px; margin-bottom: 10px; display: none;"></p>
-        <button id="btnSubmitLogin" type="submit" class="btn-action" style="width: 100%;">
-          Masuk ke Workspace
-        </button>
-      </form>
-    </div>
-  </div>
 
+  <script src="./js/sha256.js"></script>
   <script src="./js/demo-seed.js"></script>
   <script src="./js/demo-api.js"></script>
-  <script>
-    document.getElementById('btnResetDemo')?.addEventListener('click', () => {
-      if (window.DemoApi) window.DemoApi.reset();
-    });
-  </script>
   <script src="./js/app.js"></script>
 </body>
 

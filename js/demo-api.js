@@ -28,6 +28,9 @@
   const id = (p) => p + "-" + Math.random().toString(16).slice(2, 10);
   const sum = (arr, f) => arr.reduce((a, x) => a + (Number(f(x)) || 0), 0);
 
+  /* Server hanya memvalidasi bentuk hash; perhitungan dilakukan klien (js/sha256.js). */
+  const isSha256 = (h) => typeof h === "string" && /^[0-9a-f]{64}$/i.test(h);
+
   /* ---------------------------------------------------------------- state */
 
   function freshState() {
@@ -322,20 +325,39 @@
 
   function drillDown(entityType, entityId) {
     const t = String(entityType).toUpperCase();
+    function buildTimeline(eid, extraCodes) {
+      const match = (l) =>
+        l.entity_id === eid ||
+        (extraCodes && extraCodes.includes(l.entity_id)) ||
+        (l.details && (l.details.code === eid || l.details.activity_id === eid || (extraCodes && extraCodes.includes(l.details.code))));
+      return (state.audit_logs || [])
+        .filter(match)
+        .map((l) => ({
+          action: l.action,
+          timestamp: l.created_at,
+          actor: l.actor_name || "Sistem",
+          role: l.actor_role || "-",
+          details: l.details || {},
+        }));
+    }
+
     if (t === "EXPENSE") {
       const e = (state.expenses || []).find((x) => x.id === entityId || x.expense_code === entityId);
       if (!e) return null;
-      return { entity_type: "EXPENSE", entity_id: e.id, title: e.vendor_name + " · " + e.expense_code, amount: e.amount, proof_hash: e.receipt_hash, data: expenseWithFlags(e), approval_history: [] };
+      const tl = buildTimeline(e.id, [e.expense_code]);
+      return { entity_type: "EXPENSE", entity_id: e.id, title: e.vendor_name + " · " + e.expense_code, amount: e.amount, proof_hash: e.receipt_hash, data: expenseWithFlags(e), timeline: tl, approval_history: tl };
     }
     if (t === "DISBURSEMENT_ITEM") {
       const d = (state.disbursements || []).find((x) => (x.items || []).some((i) => i.id === entityId));
       const i = d && d.items.find((x) => x.id === entityId);
       if (!i) return null;
-      return { entity_type: "DISBURSEMENT_ITEM", entity_id: i.id, title: i.beneficiary_name + " · " + d.disbursement_code, amount: i.amount, proof_hash: d.transfer_receipt_hash || null, data: Object.assign({ disbursement_code: d.disbursement_code, transfer_date: d.transfer_date }, i), approval_history: [] };
+      const tl = buildTimeline(i.id, [d.id, d.disbursement_code]);
+      return { entity_type: "DISBURSEMENT_ITEM", entity_id: i.id, title: i.beneficiary_name + " · " + d.disbursement_code, amount: i.amount, proof_hash: d.transfer_receipt_hash || null, data: Object.assign({ disbursement_code: d.disbursement_code, transfer_date: d.transfer_date }, i), timeline: tl, approval_history: tl };
     }
     const a = (state.activities || []).find((x) => x.id === entityId || x.code === entityId);
     if (!a) return null;
-    return { entity_type: "ACTIVITY", entity_id: a.id, title: a.code + " · " + a.title, amount: a.total_budget, proof_hash: null, data: a, approval_history: a.approval_logs || [] };
+    const tl = buildTimeline(a.id, [a.code]);
+    return { entity_type: "ACTIVITY", entity_id: a.id, title: a.code + " · " + a.title, amount: a.total_budget, proof_hash: null, data: a, timeline: tl, approval_history: a.approval_logs || [] };
   }
 
   /* ------------------------------------------------------------------- CSV */
@@ -393,7 +415,7 @@
       return ok({ access_token: tokenFor(u.id), token_type: "bearer", user: u });
     }
     if (M === "GET" && p[0] === "auth" && p[1] === "demo-accounts") {
-      return ok({ accounts: users(), default_password_hint: "password123" });
+      return ok({ accounts: users(), demo_accounts: users(), default_password_hint: "password123" });
     }
     if (M === "GET" && p[0] === "auth" && p[1] === "me") {
       const r = requireUser(headers); if (r.error) return r.error;
@@ -459,10 +481,12 @@
 
       if (M === "POST" && p[2] === "evidences") {
         if (!can(user.role, "can_upload_field_receipt") && user.role !== "LO") return fail(403, "Peran " + user.role + " tidak memiliki izin mencatat bukti lapangan.");
+        const fileHash = body.file_hash || body.receipt_hash;
+        if (!isSha256(fileHash)) return fail(422, "Bukti wajib memiliki hash SHA-256 (64 karakter heksadesimal) yang dihitung dari isi berkas.");
         const ev = {
           id: id("ev"), activity_id: act.id, expense_id: body.expense_id || null,
           file_name: body.file_name || "bukti.jpg", file_type: body.file_type || "image/jpeg",
-          file_hash: body.file_hash || body.receipt_hash || null,
+          file_hash: fileHash,
           latitude: body.latitude || null, longitude: body.longitude || null,
           uploaded_by: user.id, uploaded_by_name: user.full_name, created_at: nowISO(),
         };
@@ -550,7 +574,7 @@
       }
       if (M === "POST" && p.length === 1) {
         if (!can(user.role, "can_disburse_funds")) return fail(403, "Peran " + user.role + " tidak memiliki wewenang pencairan dana (khusus Finance).");
-        const act = (state.activities || []).find((a) => a.id === body.activity_id);
+        const act = (state.activities || []).find((a) => a.id === body.activity_id || a.code === body.activity_id);
         if (!act) return fail(404, "Kegiatan tidak ditemukan.");
         if (act.status !== "APPROVED") return fail(409, "Pencairan hanya untuk rencana yang sudah disetujui.");
         const items = (body.items || []).map((it) => {
@@ -609,7 +633,7 @@
         item.status = "SETTLED";
         item.returned_amount = Number(body.returned_amount || 0);
         item.settled_at = nowISO();
-        item.settlement_notes = body.notes || null;
+        item.settlement_notes = body.settlement_notes || body.notes || null;
         audit(user, "DISBURSEMENT_ITEM", item.id, "SETTLE_ADVANCE", { returned_amount: item.returned_amount });
         save();
         return ok({ disbursement_item: item, preview: settlementPreview(item.id) });
@@ -626,10 +650,10 @@
       }
       if (M === "POST" && p.length === 1) {
         if (!can(user.role, "can_upload_field_receipt") && user.role !== "LO") return fail(403, "Peran " + user.role + " tidak memiliki izin mencatat pengeluaran lapangan (khusus LO).");
-        const act = (state.activities || []).find((a) => a.id === body.activity_id);
+        const act = (state.activities || []).find((a) => a.id === body.activity_id || a.code === body.activity_id);
         if (!act) return fail(404, "Kegiatan tidak ditemukan.");
         const hash = body.receipt_hash || body.file_hash;
-        if (!hash || !/^[0-9a-f]{64}$/i.test(hash)) return fail(422, "Bukti wajib memiliki hash SHA-256 64 karakter heksadesimal.");
+        if (!isSha256(hash)) return fail(422, "Kuitansi wajib memiliki hash SHA-256 (64 karakter heksadesimal) yang dihitung dari isi berkas.");
         const seq = String((state.expenses || []).length + 1).padStart(3, "0");
         const exp = {
           id: id("exp"), activity_id: act.id, activity_code: act.code, activity_title: act.title,
@@ -682,6 +706,9 @@
       return ok({ audit_logs: state.audit_logs || [] });
     }
     if (M === "GET" && p[0] === "drill-down") {
+      if (!can(user.role, "can_view_audit_trail")) {
+        return fail(403, "Peran '" + user.role + "' tidak memiliki izin mengakses drill-down audit.");
+      }
       const dd = drillDown(p[1], decodeURIComponent(p[2] || ""));
       if (!dd) return fail(404, "Entitas bukti tidak ditemukan.");
       return ok({ drill_down: dd, ...dd });

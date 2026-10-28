@@ -72,10 +72,45 @@
   }
   const apiRequest = apiFetch;
 
+  function setSidebarOpen(open) {
+    document.body.classList.toggle('sidebar-open', open);
+    const t = document.getElementById('btnSidebarToggle');
+    if (t) t.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
+  function randomNonce() {
+    return Math.random().toString(16).slice(2) + Date.now().toString(16);
+  }
+
+  function showLoginView() {
+    setSidebarOpen(false);
+    const ls = document.getElementById('loginScreen');
+    const ws = document.getElementById('workspaceShell');
+    if (ls) ls.style.display = 'flex';
+    if (ws) ws.style.display = 'none';
+  }
+
+  function showWorkspaceView() {
+    const ls = document.getElementById('loginScreen');
+    const ws = document.getElementById('workspaceShell');
+    if (ls) ls.style.display = 'none';
+    if (ws) ws.style.display = 'grid';
+    setSidebarOpen(window.innerWidth > 1080);
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('gov_access_token');
+    state.token = null;
+    state.user = null;
+    showLoginView();
+  }
+
   async function loginWithCredentials(email, password) {
     const btn = document.getElementById('btnPrimaryCta');
-    btn.setAttribute('data-state', 'loading');
-    btn.textContent = '⟳ Memautentikasi...';
+    if (btn) {
+      btn.setAttribute('data-state', 'loading');
+      btn.textContent = 'Memautentikasi...';
+    }
 
     try {
       const res = await apiFetch('/api/auth/login', {
@@ -86,31 +121,37 @@
       state.user = res.user;
       localStorage.setItem('gov_access_token', state.token);
 
-      btn.setAttribute('data-state', 'success');
-      btn.textContent = `✓ Aktif: ${res.user.role}`;
-      setTimeout(() => {
-        updatePrimaryCtaForRole(state.user);
-      }, 800);
+      if (btn) {
+        btn.setAttribute('data-state', 'success');
+        btn.textContent = `Aktif: ${res.user.role}`;
+        setTimeout(() => {
+          updatePrimaryCtaForRole(state.user);
+        }, 800);
+      }
 
       await refreshWorkspaceData();
+      showWorkspaceView();
     } catch (err) {
-      btn.setAttribute('data-state', 'error');
-      btn.textContent = '⚠ Login Gagal';
+      if (btn) {
+        btn.setAttribute('data-state', 'error');
+        btn.textContent = 'Login Gagal';
+      }
       throw err;
     }
   }
 
   function updatePrimaryCtaForRole(user) {
     const btn = document.getElementById('btnPrimaryCta');
+    if (!btn) return;
     btn.setAttribute('data-state', 'default');
     if (!user) return;
     const roleActions = {
       ADMIN: '+ Daftarkan Rekening',
       PJ: '+ Buat Rencana & RAB',
-      SV: '✓ Telaah Pengajuan',
+      SV: 'Telaah Pengajuan',
       FINANCE: '+ Buat Batch Payroll',
-      LO: '📷 Unggah Struk Lapangan',
-      AUDITOR: '⌸ Ekspor Jejak Audit',
+      LO: 'Unggah Bukti Lapangan',
+      AUDITOR: 'Ekspor Jejak Audit',
     };
     btn.textContent = roleActions[user.role] || '+ Aksi Utama';
   }
@@ -194,92 +235,6 @@
     document.getElementById('sidebarUserName').textContent = state.user.full_name;
     document.getElementById('sidebarUserRole').textContent = `${state.user.role} · ${state.user.title}`;
     document.getElementById('activeRoleBadge').textContent = `Peran Aktif: ${state.user.role} (${state.user.role_label})`;
-
-    const quickBar = document.getElementById('quickRoleBar');
-    quickBar.innerHTML = '';
-    state.demoAccounts.forEach((acc) => {
-      const pill = document.createElement('button');
-      pill.type = 'button';
-      pill.className = 'role-pill' + (state.user && state.user.email === acc.email ? ' active' : '');
-      pill.textContent = `${acc.role}: ${acc.full_name.split(',')[0].split('(')[0].trim()}`;
-      pill.addEventListener('click', () => {
-        loginWithCredentials(acc.email, 'password123');
-      });
-      quickBar.appendChild(pill);
-    });
-  }
-
-  function renderPermissionChips() {
-    const container = document.getElementById('permissionChips');
-    container.innerHTML = '';
-    if (!state.user || !state.user.permissions) return;
-
-    const perms = state.user.permissions;
-    const items = [
-      { key: 'can_create_plan', label: 'Buat Rencana & Amendemen' },
-      { key: 'can_approve_plan', label: 'Setujui Rencana (SV)' },
-      { key: 'can_disburse_funds', label: 'Pencairan Gaji & Panjar' },
-      { key: 'can_upload_field_receipt', label: 'Upload Kuitansi LO' },
-      { key: 'can_view_audit_trail', label: 'Akses Audit Trail' },
-      { key: 'can_override_approved_records', label: 'Timpa Dokumen Sah' },
-    ];
-
-    items.forEach((item) => {
-      const allowed = Boolean(perms[item.key]);
-      const chip = document.createElement('span');
-      chip.className = 'chip-tag';
-      chip.innerHTML = `
-        <span class="chip-dot ${allowed ? 'chip-dot--on' : 'chip-dot--off'}"></span>
-        <span>${escapeHtml(item.label)}: <strong>${allowed ? 'Ya' : 'Tidak'}</strong></span>
-      `;
-      container.appendChild(chip);
-    });
-  }
-
-  function renderInfoPanelVersionBox() {
-    const box = document.getElementById('infoPanelVersionBox');
-    if (!box) return;
-    const act = state.activities.find((a) => a.id === state.selectedActivityId);
-    if (!act) {
-      box.innerHTML = `<p class="breadcrumb">Pilih kegiatan untuk melihat riwayat versi.</p>`;
-      return;
-    }
-
-    const amendLog = (act.approval_logs || []).find((l) => l.action === 'AMEND');
-    let deltaHtml = '';
-    if (amendLog && amendLog.snapshot) {
-      const prevB = Number(amendLog.snapshot.previous_budget || 0);
-      const newB = Number(amendLog.snapshot.new_total_budget || act.total_budget);
-      const diff = newB - prevB;
-      const sign = diff >= 0 ? '+' : '';
-      deltaHtml = `
-        <div class="audit-item" style="margin-top: 8px;">
-          <div style="font-weight: 700; color: var(--status-warning-text);">
-            Amendemen v${escapeHtml(amendLog.snapshot.previous_version)} → v${escapeHtml(amendLog.snapshot.new_version)}
-          </div>
-          <div class="mono-num breadcrumb" style="margin-top: 2px;">
-            Pagu Lama: ${formatRupiah(prevB)}<br/>
-            Pagu Baru: ${formatRupiah(newB)} (${sign}${formatRupiah(diff)})
-          </div>
-          <div class="breadcrumb" style="margin-top: 4px;">
-            Alasan: ${escapeHtml(amendLog.notes)}
-          </div>
-        </div>
-      `;
-    }
-
-    box.innerHTML = `
-      <div class="chip-list">
-        <span class="chip-tag">
-          <span class="chip-dot ${act.is_locked ? 'chip-dot--on' : 'chip-dot--off'}"></span>
-          <strong>${escapeHtml(act.code)} · Versi v${act.version}</strong>
-        </span>
-        <span class="status-badge ${statusBadgeClass(act.status)}">
-          ${escapeHtml(act.status)}
-        </span>
-      </div>
-      ${deltaHtml}
-    `;
   }
 
   function renderActivitiesTable() {
@@ -323,11 +278,11 @@
         `;
       } else if (reviewable) {
         actionButtons = `
-          <button type="button" class="role-pill active btn-quick-approve" data-id="${escapeHtml(act.id)}">✓ Telaah / Setujui</button>
+          <button type="button" class="role-pill active btn-quick-approve" data-id="${escapeHtml(act.id)}">Telaah / Setujui</button>
         `;
       } else if (amendable) {
         actionButtons = `
-          <button type="button" class="role-pill active btn-amend-act" data-id="${escapeHtml(act.id)}">⊕ Amendemen (v${act.version + 1})</button>
+          <button type="button" class="role-pill active btn-amend-act" data-id="${escapeHtml(act.id)}">+ Amendemen (v${act.version + 1})</button>
         `;
       }
 
@@ -352,7 +307,7 @@
             ${escapeHtml(act.status)} · v${act.version}
           </span>
           <div class="breadcrumb" style="margin-top: 4px;">
-            ${act.is_locked ? '🔒 Terkunci' : '✎ Terbuka'}
+            ${act.is_locked ? '<span style="display:inline-flex;align-items:center;gap:4px;"><svg class="svg-icon" style="width:12px;height:12px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Terkunci</span>' : '<span style="display:inline-flex;align-items:center;gap:4px;"><svg class="svg-icon" style="width:12px;height:12px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Terbuka</span>'}
           </div>
         </td>
         <td>${actionButtons}</td>
@@ -363,7 +318,6 @@
         state.selectedActivityId = act.id;
         renderActivitiesTable();
         renderSelectedActivityDetail();
-        renderInfoPanelVersionBox();
       });
 
       tbody.appendChild(tr);
@@ -390,7 +344,6 @@
         state.selectedActivityId = btn.getAttribute('data-id');
         renderActivitiesTable();
         renderSelectedActivityDetail();
-        renderInfoPanelVersionBox();
       });
     });
 
@@ -403,7 +356,6 @@
     });
 
     renderSelectedActivityDetail();
-    renderInfoPanelVersionBox();
   }
 
   function renderSelectedActivityDetail() {
@@ -452,10 +404,10 @@
               placeholder="Catatan pengesahan atau alasan permintaan revisi (wajib jika meminta revisi)..."
             />
             <button id="btnSvApprove" type="button" class="btn-action" data-id="${escapeHtml(act.id)}">
-              ✓ Setujui &amp; Sahkan (Approve)
+              Setujui &amp; Sahkan (Approve)
             </button>
             <button id="btnSvRevision" type="button" class="role-pill" style="border-color: var(--status-danger-text); color: var(--status-danger-text); height: 44px; padding: 0 16px;" data-id="${escapeHtml(act.id)}">
-              ↺ Kembalikan untuk Revisi
+              Kembalikan untuk Revisi
             </button>
           </div>
         </div>
@@ -464,15 +416,19 @@
       svPanelHtml = `
         <div style="margin-top: 16px; padding: 14px 16px; border-radius: 16px; background: var(--status-success-bg); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
           <div>
-            <div style="font-weight: 700; color: var(--status-success-text);">
-              🔒 Dokumen Versi v${act.version} Telah Disahkan (Immutable Record)
+            <div style="font-weight: 700; color: var(--status-success-text); display: inline-flex; align-items: center; gap: 6px;">
+              <svg class="svg-icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              Dokumen Versi v${act.version} Telah Disahkan (Immutable Record)
             </div>
             <div class="breadcrumb">
               Dokumen yang telah disahkan tidak dapat ditimpa. Jika ada perubahan resmi, buat Amendemen baru (v${act.version + 1}).
             </div>
           </div>
           <button id="btnOpenAmendModal" type="button" class="btn-action" data-id="${escapeHtml(act.id)}">
-            ⊕ Buat Amendemen Resmi (v${act.version + 1})
+            + Buat Amendemen Resmi (v${act.version + 1})
           </button>
         </div>
       `;
@@ -499,13 +455,13 @@
           .map(
             (log) => `
                   <tr>
-                    <td class="mono-num" style="font-weight: 700;">v${log.version_number}</td>
+                    <td class="mono-num" style="font-weight: 700;">v${escapeHtml(log.version_number)}</td>
                     <td><span class="status-badge ${statusBadgeClass(log.next_status)}">${escapeHtml(log.action)}</span></td>
                     <td>
                       <div style="font-weight: 600;">${escapeHtml(log.actor_name)}</div>
                       <div class="breadcrumb">${escapeHtml(log.actor_role)}</div>
                     </td>
-                    <td class="mono-num breadcrumb">${escapeHtml(log.previous_status)} → <strong>${escapeHtml(log.next_status)}</strong></td>
+                    <td class="mono-num breadcrumb">${escapeHtml(log.previous_status)} <svg class="svg-icon" style="width:12px;height:12px;vertical-align:middle;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" x2="19" y1="12" y2="12"/><polyline points="12 5 19 12 12 19"/></svg> <strong>${escapeHtml(log.next_status)}</strong></td>
                     <td>${escapeHtml(log.notes)}</td>
                   </tr>
                 `
@@ -523,7 +479,7 @@
           <p class="breadcrumb">${escapeHtml(act.description)}</p>
         </div>
         <span class="status-badge ${act.is_locked ? 'status-badge--success' : 'status-badge--warning'}">
-          ${act.is_locked ? `🔒 Terkunci (${escapeHtml(act.status)} · v${act.version})` : '✎ Mode Terbuka (Dapat Diedit oleh PJ)'}
+          ${act.is_locked ? `<span style="display:inline-flex;align-items:center;gap:4px;"><svg class="svg-icon" style="width:12px;height:12px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Terkunci (${escapeHtml(act.status)} · v${act.version})</span>` : '<span style="display:inline-flex;align-items:center;gap:4px;"><svg class="svg-icon" style="width:12px;height:12px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Mode Terbuka (Dapat Diedit oleh PJ)</span>'}
         </span>
       </div>
       <div class="data-table-wrap">
@@ -634,7 +590,7 @@
             <button type="button" class="role-pill btn-export-csv" data-id="${escapeHtml(d.id)}">Unduh CSV</button>
             ${d.status === 'DRAFT' && canDisburse
           ? `<button type="button" class="role-pill active btn-exec-disb" data-id="${escapeHtml(d.id)}">Eksekusi</button>`
-          : `<span class="breadcrumb">${d.status === 'TRANSFERRED' ? '✓ Selesai' : 'Review'}</span>`
+          : `<span class="breadcrumb">${d.status === 'TRANSFERRED' ? 'Selesai' : 'Review'}</span>`
         }
           </div>
         </td>
@@ -715,7 +671,7 @@
         <div style="display: flex; gap: 8px;">
           <button id="btnDetailExportCsv" type="button" class="role-pill active" data-id="${escapeHtml(d.id)}">Unduh CSV Instruksi Bank</button>
           ${d.status === 'DRAFT' && canDisburse
-        ? `<button id="btnDetailExecute" type="button" class="btn-action" data-id="${escapeHtml(d.id)}">✓ Eksekusi &amp; Catat Bukti Bank</button>`
+        ? `<button id="btnDetailExecute" type="button" class="btn-action" data-id="${escapeHtml(d.id)}">Eksekusi &amp; Catat Bukti Bank</button>`
         : `<span class="status-badge status-badge--success">Status: ${escapeHtml(d.status)}</span>`
       }
         </div>
@@ -852,7 +808,12 @@
         <input type="number" min="1000" class="form-input disb-amt mono-num" data-idx="${index}" placeholder="Bruto (Rp)" value="${gross}" required />
         <input type="number" min="0" class="form-input disb-tax mono-num" data-idx="${index}" placeholder="Pajak (Rp)" value="${tax}" required />
         <input type="text" class="form-input disb-notes" data-idx="${index}" placeholder="Uraian honor..." value="${escapeHtml(item.notes)}" />
-        <button type="button" class="btn-logout disb-del" data-idx="${index}" title="Hapus">✕</button>
+        <button type="button" class="btn-logout disb-del" data-idx="${index}" title="Hapus" aria-label="Hapus">
+          <svg class="svg-icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       `;
       container.appendChild(row);
     });
@@ -963,7 +924,12 @@
         <input type="number" min="1" class="form-input rab-qty mono-num" data-idx="${index}" value="${Number(item.quantity) || 1}" required />
         <input type="text" class="form-input rab-unit" data-idx="${index}" value="${escapeHtml(item.unit)}" required />
         <input type="number" min="1" step="any" class="form-input rab-price mono-num" data-idx="${index}" value="${Number(item.unit_price) || 0}" required />
-        <button type="button" class="btn-logout rab-del" data-idx="${index}" title="Hapus baris">✕</button>
+        <button type="button" class="btn-logout rab-del" data-idx="${index}" title="Hapus baris" aria-label="Hapus baris">
+          <svg class="svg-icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       `;
       container.appendChild(row);
     });
@@ -1023,7 +989,7 @@
     const codeInput = document.getElementById('actCode');
 
     if (activityToEdit && mode === 'amend') {
-      document.getElementById('activityModalTitle').textContent = `Buat Amendemen Resmi: ${activityToEdit.code} (v${activityToEdit.version} → v${activityToEdit.version + 1})`;
+      document.getElementById('activityModalTitle').textContent = `Buat Amendemen Resmi: ${activityToEdit.code} (v${activityToEdit.version} ke v${activityToEdit.version + 1})`;
       document.getElementById('activityModalSubtitle').textContent =
         'Versi sebelumnya beserta seluruh baris RAB disimpan utuh di snapshot persetujuan.';
       document.getElementById('editActivityId').value = activityToEdit.id;
@@ -1098,35 +1064,9 @@
     document.getElementById('activityModal').style.display = 'flex';
   }
 
-  function renderAuditFeed() {
-    const feed = document.getElementById('auditTrailFeed');
-    feed.innerHTML = '';
-    document.getElementById('navBadgeAudit').textContent = String(state.auditLogs.length);
-
-    if (state.user && state.user.permissions && !state.user.permissions.can_view_audit_trail) {
-      feed.innerHTML = `<div class="audit-item breadcrumb">Peran ${escapeHtml(state.user.role)} hanya memiliki akses buku kas &amp; bukti lapangan (Audit Trail global dibatasi RBAC).</div>`;
-      return;
-    }
-
-    state.auditLogs.slice(0, 12).forEach((log) => {
-      const div = document.createElement('div');
-      div.className = 'audit-item';
-      const timeStr = new Date(log.created_at).toLocaleTimeString('id-ID', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      });
-      div.innerHTML = `
-        <div style="display:flex; justify-content:space-between; font-weight:600; color:var(--text-primary);">
-          <span>${escapeHtml(log.action)}</span>
-          <span class="mono-num breadcrumb">${escapeHtml(timeStr)}</span>
-        </div>
-        <div class="breadcrumb" style="margin-top:2px;">
-          Pelaku: <strong>${escapeHtml(log.actor_name)}</strong> (${escapeHtml(log.actor_role)})
-        </div>
-      `;
-      feed.appendChild(div);
-    });
+  function renderAuditBadge() {
+    const badgeEl = document.getElementById('navBadgeAudit');
+    if (badgeEl) badgeEl.textContent = String(state.auditLogs.length);
   }
 
   async function loadLoCashbook(activityId = null) {
@@ -1179,10 +1119,6 @@
       alertBox.style.display = 'none';
     }
 
-    // Update Right InfoPanel Cashbox
-    document.getElementById('infoPanelRemainingCash').textContent = formatRupiah(cb.remaining_cash_on_hand);
-    document.getElementById('infoPanelTotalAdvance').textContent = formatRupiah(cb.total_advance_received);
-    document.getElementById('infoPanelTotalExpenses').textContent = formatRupiah(cb.total_expenses_submitted);
 
     // Render Ledger Table Body
     const tbody = document.getElementById('loCashbookTableBody');
@@ -1269,19 +1205,12 @@
     document.getElementById('metricPayroll').textContent = formatRupiah(summaryRes.metrics.direct_payroll_disbursed);
     document.getElementById('metricLoAdvance').textContent = formatRupiah(summaryRes.metrics.lo_advance_active);
 
-    // Update Right InfoPanel Cashbox
-    if (summaryRes.metrics.lo_cash_on_hand !== undefined) {
-      document.getElementById('infoPanelRemainingCash').textContent = formatRupiah(summaryRes.metrics.lo_cash_on_hand);
-      document.getElementById('infoPanelTotalAdvance').textContent = formatRupiah(summaryRes.metrics.lo_advance_active);
-      document.getElementById('infoPanelTotalExpenses').textContent = formatRupiah(summaryRes.metrics.lo_expenses_realized || 0);
-    }
 
     renderSidebarAndHeader();
-    renderPermissionChips();
     renderActivitiesTable();
     renderDisbursementsTable();
     renderBankAccountsTable();
-    renderAuditFeed();
+    renderAuditBadge();
     updatePrimaryCtaForRole(state.user);
     applyRoleNavigation(state.user);
 
@@ -1314,28 +1243,31 @@
       const first = items.find((li) => allowed(li.dataset.module));
       if (first) switchModule(first.dataset.module);
     }
+
   }
 
   async function bootstrap() {
-    const demoRes = await apiFetch('/api/auth/demo-accounts');
-    state.demoAccounts = demoRes.accounts || [];
+    try {
+      const demoRes = await apiFetch('/api/auth/demo-accounts');
+      state.demoAccounts = demoRes.accounts || [];
+    } catch (_) {
+      state.demoAccounts = [];
+    }
 
     if (state.token) {
       try {
         await refreshWorkspaceData();
+        showWorkspaceView();
         return;
       } catch (_) {
         localStorage.removeItem('gov_access_token');
         state.token = null;
+        state.user = null;
       }
     }
 
-    const modal = document.getElementById('loginModal');
-    if (modal) {
-      modal.style.display = 'flex';
-      document.getElementById('loginEmail').value = 'pj@dinas.go.id';
-      document.getElementById('loginPassword').value = 'password123';
-    }
+    // Alur dimulai dari Login Page
+    showLoginView();
   }
 
   // Event Listeners
@@ -1343,6 +1275,7 @@
     item.addEventListener('click', () => {
       const mod = item.dataset.module;
       if (mod) switchModule(mod);
+      if (window.innerWidth <= 768) setSidebarOpen(false);
     });
   });
 
@@ -1353,10 +1286,18 @@
   });
 
   document.getElementById('btnPrimaryCta').addEventListener('click', () => {
-    if (state.user && state.user.role === 'FINANCE') {
+    if (!state.user) return;
+    const role = state.user.role;
+    if (role === 'FINANCE') {
       openNewPayrollModal();
-    } else if (state.user && state.user.role === 'PJ') {
+    } else if (role === 'PJ') {
       openActivityModal(null, 'create');
+    } else if (role === 'LO') {
+      document.getElementById('btnOpenFieldCaptureModal')?.click();
+    } else if (role === 'SV') {
+      switchModule('planning');
+    } else if (role === 'AUDITOR') {
+      switchModule('audit');
     } else {
       document.getElementById('newBankAccountModal').style.display = 'flex';
     }
@@ -1608,6 +1549,11 @@
           throw new Error('Nama vendor dan nominal belanja harus diisi > 0.');
         }
 
+        // Simulasi isi berkas kuitansi (demo tidak mengunggah file): data kuitansi + waktu + nonce,
+        // sehingga tiap unggahan punya hash berbeda seperti berkas sungguhan.
+        const rawReceipt = [activityId, vendor, receiptNum, amount, txDate, nowIso, randomNonce()].join('|');
+        const calcHash = window.Sha256.hex(rawReceipt);
+
         await apiFetch('/api/expenses', {
           method: 'POST',
           body: JSON.stringify({
@@ -1619,10 +1565,14 @@
             transaction_date: txDate,
             latitude: -6.2088,
             longitude: 106.8456,
-            receipt_content: `kuitansi-${activityId}-${vendor}-${receiptNum}-${amount}`,
+            receipt_content: rawReceipt,
+            receipt_hash: calcHash,
           }),
         });
       } else {
+        const photoContent = ['foto-lapangan', activityId, title, nowIso, randomNonce()].join('|');
+        const photoHash = window.Sha256.hex(photoContent);
+
         await apiFetch(`/api/activities/${activityId}/evidences`, {
           method: 'POST',
           body: JSON.stringify({
@@ -1631,7 +1581,8 @@
             latitude: -6.2088,
             longitude: 106.8456,
             captured_at: nowIso,
-            photo_content: `foto-lapangan-${activityId}-${title}-${nowIso}`,
+            photo_content: photoContent,
+            file_hash: photoHash,
           }),
         });
       }
@@ -1659,14 +1610,14 @@
       queued_at: new Date().toISOString(),
     });
     localStorage.setItem('gov_offline_drafts', JSON.stringify(drafts));
-    alert(`✓ Draf berhasil diantrekan secara offline! Total antrean offline: ${drafts.length} item.`);
+    alert(`Draf berhasil diantrekan secara offline! Total antrean offline: ${drafts.length} item.`);
     fieldCaptureModal.style.display = 'none';
   });
 
   document.getElementById('btnOpenLoDisbursementModal')?.addEventListener('click', () => {
     const act = state.activities.find((a) => a.status === 'APPROVED') || state.activities[0];
     if (act) {
-      openNewDisbursementModal(act.id);
+      openNewPayrollModal(act.id);
       setTimeout(() => {
         const typeSelect = document.querySelector('.disb-item-type');
         if (typeSelect) {
@@ -1795,7 +1746,7 @@
               ${exp.verified_by_name ? `<div class="breadcrumb" style="font-size: 10px; margin-top: 2px;">oleh ${escapeHtml(exp.verified_by_name)}</div>` : ''}
             </td>
             <td>
-              <button type="button" class="role-pill btn-inspect-receipt" data-id="${exp.id}">
+              <button type="button" class="role-pill btn-inspect-receipt" data-id="${escapeHtml(exp.id)}">
                 Periksa Kuitansi
               </button>
             </td>
@@ -1840,7 +1791,9 @@
     if (val.is_clean) {
       valContainer.innerHTML = `
         <div class="validation-flag-item validation-flag-item--clean">
-          <span>✓</span>
+          <svg class="svg-icon" style="width: 16px; height: 16px; color: var(--status-success-text); flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
           <div><strong>Semua Uji Integritas Lolos:</strong> Kuitansi sesuai pagu anggaran (L1), dalam jadwal kegiatan (L2), dan tidak ditemukan duplikasi kuitansi/hash berkas (L3).</div>
         </div>
       `;
@@ -1848,10 +1801,12 @@
       valContainer.innerHTML = flags
         .map((f) => {
           const itemClass = f.level === 'DANGER' ? 'validation-flag-item--danger' : 'validation-flag-item--warning';
-          const icon = f.level === 'DANGER' ? '⛔' : '⚠️';
+          const iconSvg = f.level === 'DANGER'
+            ? `<svg class="svg-icon" style="width: 16px; height: 16px; color: var(--status-danger-text); flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>`
+            : `<svg class="svg-icon" style="width: 16px; height: 16px; color: #D97706; flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`;
           return `
             <div class="validation-flag-item ${itemClass}">
-              <span>${icon}</span>
+              <span>${iconSvg}</span>
               <div>
                 <strong>${escapeHtml(f.rule)}:</strong> ${escapeHtml(f.message)}
               </div>
@@ -1911,12 +1866,12 @@
       });
 
       btn.dataset.state = 'success';
-      btn.textContent = decision === 'VERIFY' ? '✓ Terverifikasi!' : '✕ Ditolak!';
+      btn.textContent = decision === 'VERIFY' ? 'Terverifikasi!' : 'Ditolak!';
 
       setTimeout(async () => {
         document.getElementById('receiptReviewModal').style.display = 'none';
         btn.dataset.state = 'idle';
-        btn.textContent = decision === 'VERIFY' ? '✓ Verifikasi Kuitansi' : '✕ Tolak Kuitansi';
+        btn.textContent = decision === 'VERIFY' ? 'Verifikasi Kuitansi' : 'Tolak Kuitansi';
         await loadReconciliationView();
         await loadDashboardSummary();
       }, 700);
@@ -1926,7 +1881,7 @@
       alert(err.message);
       setTimeout(() => {
         btn.dataset.state = 'idle';
-        btn.textContent = decision === 'VERIFY' ? '✓ Verifikasi Kuitansi' : '✕ Tolak Kuitansi';
+        btn.textContent = decision === 'VERIFY' ? 'Verifikasi Kuitansi' : 'Tolak Kuitansi';
       }, 1500);
     }
   }
@@ -2009,7 +1964,7 @@
       });
 
       btn.dataset.state = 'success';
-      btn.textContent = '✓ Panjar Ditutup!';
+      btn.textContent = 'Panjar Berhasil Ditutup!';
 
       setTimeout(async () => {
         document.getElementById('settlementModal').style.display = 'none';
@@ -2092,7 +2047,7 @@
         badge.textContent = '100% Integritas Kriptografis Lolos';
       } else {
         badge.className = 'status-badge status-badge--danger';
-        badge.textContent = `⚠ ${val.flagged_expenses_count} Peringatan Integritas Terdeteksi`;
+        badge.innerHTML = `<span style="display:inline-flex;align-items:center;gap:4px;"><svg class="svg-icon" style="width:12px;height:12px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${val.flagged_expenses_count} Peringatan Integritas Terdeteksi</span>`;
       }
     }
 
@@ -2106,8 +2061,8 @@
         rabBody.innerHTML = breakdown.map((b) => `
           <tr>
             <td>
-              <div style="font-weight: 600; color: var(--text-primary);">${b.item_name}</div>
-              <div class="breadcrumb" style="font-size: 11px;">${b.category} · ${b.quantity} ${b.unit} @ ${formatRupiah(b.unit_price)}</div>
+              <div style="font-weight: 600; color: var(--text-primary);">${escapeHtml(b.item_name)}</div>
+              <div class="breadcrumb" style="font-size: 11px;">${escapeHtml(b.category)} · ${escapeHtml(b.quantity)} ${escapeHtml(b.unit)} @ ${formatRupiah(b.unit_price)}</div>
             </td>
             <td style="text-align: right;" class="mono-num">${formatRupiah(b.budget_pagu)}</td>
             <td style="text-align: right;" class="mono-num">${formatRupiah(b.realized_payroll)}</td>
@@ -2115,14 +2070,18 @@
             <td style="text-align: right; font-weight: 700;" class="mono-num">${formatRupiah(b.total_realized)}</td>
             <td style="text-align: right; color: ${b.variance >= 0 ? 'var(--status-success-text)' : 'var(--status-danger-text)'};" class="mono-num">${formatRupiah(b.variance)}</td>
             <td style="text-align: center;">
-              <span class="status-badge ${b.realization_percentage > 100 ? 'status-badge--danger' : 'status-badge--success'}">
-                ${b.realization_percentage}%
+              <span class="status-badge ${Number(b.realization_percentage) > 100 ? 'status-badge--danger' : 'status-badge--success'}">
+                ${Number(b.realization_percentage) || 0}%
               </span>
             </td>
           </tr>
         `).join('');
       }
     }
+
+    // Drill-down hanya untuk peran dengan can_view_audit_trail (selaras gate API 403)
+    const canDrill = Boolean(state.user && state.user.permissions && state.user.permissions.can_view_audit_trail);
+    const DRILL_ICON = '<svg class="svg-icon" style="width:12px;height:12px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></svg>';
 
     // 4. Tab 2: Direct Payroll Staf
     const payrollBody = document.getElementById('rptPayrollTableBody');
@@ -2134,24 +2093,24 @@
         payrollBody.innerHTML = payrolls.map((p) => `
           <tr>
             <td>
-              <div style="font-weight: 600; color: var(--text-primary);">${p.beneficiary_name}</div>
-              <div class="breadcrumb" style="font-size: 11px;">${p.bank_name} - ${p.account_number}</div>
+              <div style="font-weight: 600; color: var(--text-primary);">${escapeHtml(p.beneficiary_name)}</div>
+              <div class="breadcrumb" style="font-size: 11px;">${escapeHtml(p.bank_name)} - ${escapeHtml(p.account_number)}</div>
             </td>
-            <td class="mono-num" style="font-size: 12px; color: var(--text-secondary);">${p.tax_id_npwp || '-'}</td>
+            <td class="mono-num" style="font-size: 12px; color: var(--text-secondary);">${escapeHtml(p.tax_id_npwp || '-')}</td>
             <td style="text-align: right; font-weight: 700; color: var(--primary);" class="mono-num">${formatRupiah(p.net_amount)}</td>
-            <td class="mono-num" style="font-size: 11px;">${p.transfer_reference_no || '-'}</td>
+            <td class="mono-num" style="font-size: 11px;">${escapeHtml(p.transfer_reference_no || '-')}</td>
             <td>
               <span class="status-badge ${p.status === 'PAID' || p.status === 'SETTLED' ? 'status-badge--success' : 'status-badge--warning'}">
-                ${p.status}
+                ${escapeHtml(p.status)}
               </span>
             </td>
             <td class="mono-num" style="font-size: 10px; color: var(--text-muted);">
-              ${p.transfer_receipt_hash ? p.transfer_receipt_hash.substring(0, 16) + '...' : '-'}
+              ${escapeHtml(p.transfer_receipt_hash ? p.transfer_receipt_hash.substring(0, 16) + '...' : '-')}
             </td>
             <td>
-              <button type="button" class="role-pill btn-drill-down" data-entity-type="DISBURSEMENT_ITEM" data-entity-id="${p.id}">
-                🔍 Bukti Transfer
-              </button>
+              ${canDrill ? `<button type="button" class="role-pill btn-drill-down" data-entity-type="DISBURSEMENT_ITEM" data-entity-id="${escapeHtml(p.id)}">
+                ${DRILL_ICON} Bukti Transfer
+              </button>` : '<span class="breadcrumb">-</span>'}
             </td>
           </tr>
         `).join('');
@@ -2168,25 +2127,25 @@
         expBody.innerHTML = expenses.map((e) => `
           <tr>
             <td>
-              <div class="mono-num" style="font-weight: 600; color: var(--primary); font-size: 12px;">${e.expense_code}</div>
-              <div class="breadcrumb" style="font-size: 11px;">${e.vendor_name}</div>
+              <div class="mono-num" style="font-weight: 600; color: var(--primary); font-size: 12px;">${escapeHtml(e.expense_code)}</div>
+              <div class="breadcrumb" style="font-size: 11px;">${escapeHtml(e.vendor_name)}</div>
             </td>
-            <td class="mono-num" style="font-size: 12px; color: var(--text-secondary);">${e.transaction_date}</td>
-            <td style="font-size: 12px; color: var(--text-secondary);">${e.description}</td>
+            <td class="mono-num" style="font-size: 12px; color: var(--text-secondary);">${escapeHtml(e.transaction_date)}</td>
+            <td style="font-size: 12px; color: var(--text-secondary);">${escapeHtml(e.description)}</td>
             <td style="text-align: right; font-weight: 700; color: var(--status-success-text);" class="mono-num">${formatRupiah(e.amount)}</td>
             <td>
               <span class="status-badge ${e.status === 'VERIFIED' ? 'status-badge--success' : (e.status === 'REJECTED' ? 'status-badge--danger' : 'status-badge--warning')}">
-                ${e.status}
+                ${escapeHtml(e.status)}
               </span>
-              <div class="breadcrumb" style="font-size: 10px; margin-top: 2px;">${e.verified_by_name || '-'}</div>
+              <div class="breadcrumb" style="font-size: 10px; margin-top: 2px;">${escapeHtml(e.verified_by_name || '-')}</div>
             </td>
             <td class="mono-num" style="font-size: 10px; color: var(--text-muted);">
-              ${e.receipt_hash ? e.receipt_hash.substring(0, 16) + '...' : '-'}
+              ${escapeHtml(e.receipt_hash ? e.receipt_hash.substring(0, 16) + '...' : '-')}
             </td>
             <td>
-              <button type="button" class="role-pill btn-drill-down" data-entity-type="EXPENSE" data-entity-id="${e.id}">
-                🔍 Kuitansi &amp; Hash
-              </button>
+              ${canDrill ? `<button type="button" class="role-pill btn-drill-down" data-entity-type="EXPENSE" data-entity-id="${escapeHtml(e.id)}">
+                ${DRILL_ICON} Kuitansi &amp; Hash
+              </button>` : '<span class="breadcrumb">-</span>'}
             </td>
           </tr>
         `).join('');
@@ -2202,12 +2161,12 @@
       } else {
         auditBody.innerHTML = logs.map((a) => `
           <tr>
-            <td class="mono-num" style="font-size: 11px; color: var(--text-secondary);">${(a.created_at || '').substring(0, 19).replace('T', ' ')}</td>
-            <td style="font-weight: 600; font-size: 12px; color: var(--text-primary);">${a.action}</td>
-            <td style="font-size: 12px; color: var(--text-secondary);">${a.actor_name} <span class="status-badge status-badge--success" style="font-size: 9px; padding: 1px 4px;">${a.actor_role}</span></td>
-            <td class="mono-num" style="font-size: 11px; color: var(--primary);">${a.entity_type}</td>
+            <td class="mono-num" style="font-size: 11px; color: var(--text-secondary);">${escapeHtml((a.created_at || '').substring(0, 19).replace('T', ' '))}</td>
+            <td style="font-weight: 600; font-size: 12px; color: var(--text-primary);">${escapeHtml(a.action)}</td>
+            <td style="font-size: 12px; color: var(--text-secondary);">${escapeHtml(a.actor_name)} <span class="status-badge status-badge--success" style="font-size: 9px; padding: 1px 4px;">${escapeHtml(a.actor_role)}</span></td>
+            <td class="mono-num" style="font-size: 11px; color: var(--primary);">${escapeHtml(a.entity_type)}</td>
             <td class="mono-num" style="font-size: 11px; color: var(--text-muted); max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-              ${JSON.stringify(a.details || {})}
+              ${escapeHtml(JSON.stringify(a.details || {}))}
             </td>
           </tr>
         `).join('');
@@ -2239,7 +2198,7 @@
       const res = await apiFetch(`/api/drill-down/${encodeURIComponent(entityType)}/${encodeURIComponent(entityId)}`);
       const data = res.drill_down || res;
 
-      document.getElementById('ddTitle').textContent = `Penelusuran Bukti Sumber: ${data.entity_type}`;
+      document.getElementById('ddTitle').textContent = `Penelusuran Bukti Sumber: ${escapeHtml(data.entity_type)}`;
       document.getElementById('ddEntityType').textContent = data.entity_type;
       document.getElementById('ddEntityHeading').textContent = data.title || '-';
       document.getElementById('ddAmount').textContent = formatRupiah(data.amount || 0);
@@ -2251,25 +2210,25 @@
         let metaHtml = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">';
         if (data.entity_type === 'EXPENSE') {
           metaHtml += `
-            <div><strong>Kode Belanja:</strong> ${item.expense_code || '-'}</div>
-            <div><strong>Tanggal:</strong> ${item.transaction_date || '-'}</div>
-            <div><strong>Vendor:</strong> ${item.vendor_name || '-'}</div>
-            <div><strong>No. Kuitansi:</strong> ${item.receipt_number || '-'}</div>
-            <div><strong>Status Verifikasi:</strong> ${item.status || '-'}</div>
-            <div><strong>Verifikator:</strong> ${item.verified_by_name || '-'}</div>
-            <div style="grid-column: span 2;"><strong>Uraian:</strong> ${item.description || '-'}</div>
+            <div><strong>Kode Belanja:</strong> ${escapeHtml(item.expense_code || '-')}</div>
+            <div><strong>Tanggal:</strong> ${escapeHtml(item.transaction_date || '-')}</div>
+            <div><strong>Vendor:</strong> ${escapeHtml(item.vendor_name || '-')}</div>
+            <div><strong>No. Kuitansi:</strong> ${escapeHtml(item.receipt_number || '-')}</div>
+            <div><strong>Status Verifikasi:</strong> ${escapeHtml(item.status || '-')}</div>
+            <div><strong>Verifikator:</strong> ${escapeHtml(item.verified_by_name || '-')}</div>
+            <div style="grid-column: span 2;"><strong>Uraian:</strong> ${escapeHtml(item.description || '-')}</div>
           `;
         } else if (data.entity_type === 'DISBURSEMENT_ITEM') {
           metaHtml += `
-            <div><strong>Penerima:</strong> ${item.beneficiary_name || '-'}</div>
-            <div><strong>Rekening:</strong> ${item.bank_name || '-'} ${item.account_number || ''}</div>
-            <div><strong>NPWP:</strong> ${item.tax_id_npwp || '-'}</div>
-            <div><strong>Status Transfer:</strong> ${item.status || '-'}</div>
-            <div><strong>No. Referensi:</strong> ${item.transfer_reference_no || '-'}</div>
-            <div><strong>Tanggal Transfer:</strong> ${item.transfer_date || '-'}</div>
+            <div><strong>Penerima:</strong> ${escapeHtml(item.beneficiary_name || '-')}</div>
+            <div><strong>Rekening:</strong> ${escapeHtml(item.bank_name || '-')} ${escapeHtml(item.account_number || '')}</div>
+            <div><strong>NPWP:</strong> ${escapeHtml(item.tax_id_npwp || '-')}</div>
+            <div><strong>Status Transfer:</strong> ${escapeHtml(item.status || '-')}</div>
+            <div><strong>No. Referensi:</strong> ${escapeHtml(item.transfer_reference_no || '-')}</div>
+            <div><strong>Tanggal Transfer:</strong> ${escapeHtml(item.transfer_date || '-')}</div>
           `;
         } else {
-          metaHtml += `<div style="grid-column: span 2;"><pre class="mono-num" style="font-size: 11px; margin: 0; font-family: var(--font-mono);">${JSON.stringify(item, null, 2)}</pre></div>`;
+          metaHtml += `<div style="grid-column: span 2;"><pre class="mono-num" style="font-size: 11px; margin: 0; font-family: var(--font-mono);">${escapeHtml(JSON.stringify(item, null, 2))}</pre></div>`;
         }
         metaHtml += '</div>';
         metaContainer.innerHTML = metaHtml;
@@ -2284,11 +2243,11 @@
           feed.innerHTML = timeline.map((t) => `
             <div class="audit-item" style="padding: 6px 0; border-bottom: 1px solid var(--border-subtle);">
               <div style="display: flex; justify-content: space-between; font-size: 11px;">
-                <strong>${t.action}</strong>
-                <span class="mono-num" style="color: var(--text-muted); font-size: 10px;">${(t.timestamp || '').substring(0, 19).replace('T', ' ')}</span>
+                <strong>${escapeHtml(t.action)}</strong>
+                <span class="mono-num" style="color: var(--text-muted); font-size: 10px;">${escapeHtml((t.timestamp || '').substring(0, 19).replace('T', ' '))}</span>
               </div>
               <div style="font-size: 11px; color: var(--text-secondary);">
-                Oleh: ${t.actor || '-'} (${t.role || '-'})
+                Oleh: ${escapeHtml(t.actor || '-')} (${escapeHtml(t.role || '-')})
               </div>
             </div>
           `).join('');
@@ -2381,38 +2340,82 @@
     });
   });
 
-  document.getElementById('hs_info_toggle').addEventListener('click', () => {
-    const shell = document.getElementById('workspaceShell');
-    const panel = document.getElementById('infoPanel');
-    const collapsed = shell.classList.toggle('infopanel-collapsed');
-    panel.style.opacity = collapsed ? '0.2' : '1';
+  // Sidebar (push layout): toggle buka/tutup
+  document.getElementById('btnSidebarToggle')?.addEventListener('click', () => {
+    setSidebarOpen(!document.body.classList.contains('sidebar-open'));
   });
 
-  document.getElementById('btnToggle8State').addEventListener('click', () => {
-    const el = document.getElementById('eightStateInspector');
-    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  // Sesi / Logout handler: tombol logout di sidebar mengembalikan ke login page
+  document.getElementById('btnOpenLoginModal')?.addEventListener('click', () => {
+    handleLogout();
   });
 
-  document.getElementById('btnOpenLoginModal').addEventListener('click', () => {
-    document.getElementById('loginModal').style.display = 'flex';
+  // 1-Klik Akun Demo di Dedicated Landing Login Screen (#loginScreen)
+  document.querySelectorAll('#loginScreenAccountsGrid .demo-role-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const email = btn.dataset.email;
+      if (!email) return;
+      const lsEmail = document.getElementById('lsEmail');
+      const lsPassword = document.getElementById('lsPassword');
+      const errEl = document.getElementById('lsErrorMsg');
+      const submitBtn = document.getElementById('btnSubmitLoginScreen');
+      if (lsEmail) lsEmail.value = email;
+      if (lsPassword) lsPassword.value = 'password123';
+      if (errEl) errEl.style.display = 'none';
+      if (submitBtn) {
+        submitBtn.setAttribute('data-state', 'loading');
+        submitBtn.textContent = 'Memautentikasi...';
+      }
+      try {
+        await loginWithCredentials(email, 'password123');
+      } catch (err) {
+        if (errEl) {
+          errEl.textContent = err.message || 'Login gagal';
+          errEl.style.display = 'block';
+        }
+      } finally {
+        if (submitBtn) {
+          submitBtn.setAttribute('data-state', 'default');
+          submitBtn.textContent = 'Masuk ke Workspace';
+        }
+      }
+    });
   });
 
-  document.getElementById('btnCloseLoginModal').addEventListener('click', () => {
-    document.getElementById('loginModal').style.display = 'none';
-  });
-
-  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  // Form Masuk Manual di Dedicated Landing Login Screen (#loginScreen)
+  document.getElementById('loginScreenForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    const errEl = document.getElementById('loginErrorMsg');
-    errEl.style.display = 'none';
+    const email = document.getElementById('lsEmail').value;
+    const password = document.getElementById('lsPassword').value;
+    const errEl = document.getElementById('lsErrorMsg');
+    const submitBtn = document.getElementById('btnSubmitLoginScreen');
+    if (errEl) errEl.style.display = 'none';
+    if (submitBtn) {
+      submitBtn.setAttribute('data-state', 'loading');
+      submitBtn.textContent = 'Memautentikasi...';
+    }
     try {
       await loginWithCredentials(email, password);
-      document.getElementById('loginModal').style.display = 'none';
     } catch (err) {
-      errEl.textContent = err.message;
-      errEl.style.display = 'block';
+      if (errEl) {
+        errEl.textContent = err.message || 'Login gagal';
+        errEl.style.display = 'block';
+      }
+    } finally {
+      if (submitBtn) {
+        submitBtn.setAttribute('data-state', 'default');
+        submitBtn.textContent = 'Masuk ke Workspace';
+      }
+    }
+  });
+
+  // Reset Demo Data
+  document.getElementById('btnResetDemo')?.addEventListener('click', () => {
+    if (confirm('Kembalikan semua data demo ke kondisi awal (seed)?')) {
+      handleLogout();
+      if (window.DemoApi && typeof window.DemoApi.reset === 'function') {
+        window.DemoApi.reset();
+      }
     }
   });
 

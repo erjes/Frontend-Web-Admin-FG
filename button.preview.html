@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Financial Action Button — 8-State Hallmark Wrapper</title>
+  <link rel="stylesheet" href="./css/gov.css" />
+  <style>
+    .demo-wrap {
+      max-width: 680px;
+      margin: 48px auto;
+      padding: 28px;
+    }
+    .state-row {
+      display: grid;
+      grid-template-columns: 160px minmax(0, 1fr);
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .state-label {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-canvas" aria-hidden="true">
+    <div class="orb orb--top-left"></div>
+    <div class="orb orb--bottom-right"></div>
+  </div>
+
+  <main class="demo-wrap glass-panel" style="position: relative; z-index: 1;">
+    <div class="panel-header-row">
+      <div>
+        <div class="breadcrumb">Hallmark · Component-Scope 8-State Verification</div>
+        <h1 class="card-header" style="font-size: 20px; margin-top: 4px;">
+          Tombol Aksi Finansial (Standar Hallmark 8-State)
+        </h1>
+      </div>
+      <a href="./index.html" class="status-badge status-badge--scheduled" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+        <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Kembali ke Portal
+      </a>
+    </div>
+
+    <div class="state-row">
+      <span class="state-label">1. default</span>
+      <div><button type="button" class="btn-action">Setujui &amp; Transfer</button></div>
+    </div>
+    <div class="state-row">
+      <span class="state-label">2. hover (.is-hover)</span>
+      <div><button type="button" class="btn-action is-hover">Setujui &amp; Transfer</button></div>
+    </div>
+    <div class="state-row">
+      <span class="state-label">3. focus (.is-focus)</span>
+      <div><button type="button" class="btn-action is-focus">Setujui &amp; Transfer</button></div>
+    </div>
+    <div class="state-row">
+      <span class="state-label">4. active (.is-active)</span>
+      <div><button type="button" class="btn-action is-active">Setujui &amp; Transfer</button></div>
+    </div>
+    <div class="state-row">
+      <span class="state-label">5. disabled</span>
+      <div><button type="button" class="btn-action" disabled>Setujui &amp; Transfer</button></div>
+    </div>
+    <div class="state-row">
+      <span class="state-label">6. loading</span>
+      <div><button type="button" class="btn-action" data-state="loading">Memproses ke Bank / Ledger...</button></div>
+    </div>
+    <div class="state-row">
+      <span class="state-label">7. error</span>
+      <div><button type="button" class="btn-action" data-state="error">Gagal: Saldo Kas Kurang</button></div>
+    </div>
+    <div class="state-row">
+      <span class="state-label">8. success</span>
+      <div><button type="button" class="btn-action" data-state="success">Berhasil Ditransfer &amp; Tercatat</button></div>
+    </div>
+  </main>
+</body>
+</html>
